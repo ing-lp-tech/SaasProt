@@ -27,6 +27,8 @@ export const TenantProvider = ({ children }) => {
                 let tenantData = null;
 
                 // A) Detección por Subdominio
+                const IGNORED_SUBDOMAINS = ['www', 'saas-prot', 'ingenieroemprendedor']; // Agrega aquí tus dominios principales
+
                 if (hostname.includes('localhost')) {
                     const urlParams = new URLSearchParams(window.location.search);
                     const tenantParam = urlParams.get('tenant');
@@ -38,7 +40,13 @@ export const TenantProvider = ({ children }) => {
                         subdomain = tenantParam;
                     } else {
                         const parts = hostname.split('.');
-                        if (parts.length > 2) subdomain = parts[0];
+                        // Estrategia básica: toma el primer elemento si hay más de 2 partes
+                        if (parts.length > 2) {
+                            const candidate = parts[0];
+                            if (!IGNORED_SUBDOMAINS.includes(candidate)) {
+                                subdomain = candidate;
+                            }
+                        }
                     }
                 }
 
