@@ -27,7 +27,7 @@ export const TenantProvider = ({ children }) => {
                 let tenantData = null;
 
                 // A) Detección por Subdominio
-                const IGNORED_SUBDOMAINS = ['www', 'saas-prot', 'ingenieroemprendedor']; // Agrega aquí tus dominios principales
+                const IGNORED_SUBDOMAINS = ['www', 'saas-prot', 'ingenieroemprendedor'];
 
                 if (hostname.includes('localhost')) {
                     const urlParams = new URLSearchParams(window.location.search);
@@ -36,11 +36,16 @@ export const TenantProvider = ({ children }) => {
                 } else {
                     const urlParams = new URLSearchParams(window.location.search);
                     const tenantParam = urlParams.get('tenant');
+
                     if (tenantParam) {
                         subdomain = tenantParam;
+                    } else if (hostname.endsWith('.vercel.app')) {
+                        // IMPORTANTE: En Vercel, si no hay ?tenant=... asumimos que es la Landing Page
+                        // Esto evita que "saas-prot.vercel.app" o "saas-prot-git-main..." se tomen como clientes
+                        subdomain = null;
                     } else {
+                        // Lógica para dominios personalizados reales (ej: cliente1.tuweb.com)
                         const parts = hostname.split('.');
-                        // Estrategia básica: toma el primer elemento si hay más de 2 partes
                         if (parts.length > 2) {
                             const candidate = parts[0];
                             if (!IGNORED_SUBDOMAINS.includes(candidate)) {
