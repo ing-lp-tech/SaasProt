@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTenant } from '../contexts/TenantContext';
 import { Lock, Mail } from 'lucide-react';
 
 export default function Login() {
@@ -10,6 +11,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { signIn } = useAuth();
+    const { tenant } = useTenant();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,7 +24,7 @@ export default function Login() {
             setError('Credenciales incorrectas');
             setLoading(false);
         } else {
-            navigate('/admin/dashboard');
+            navigate(tenant ? `/admin/dashboard?tenant=${tenant.subdomain}` : '/admin/dashboard');
         }
     };
 
@@ -92,7 +94,7 @@ export default function Login() {
                 </form>
 
                 <div className="text-center mt-8 pt-6 border-t border-gray-100">
-                    <Link to="/" className="text-indigo-600 hover:text-purple-700 text-sm font-medium transition-colors">
+                    <Link to={tenant ? `/?tenant=${tenant.subdomain}` : "/"} className="text-indigo-600 hover:text-purple-700 text-sm font-medium transition-colors">
                         ← Volver al sitio web
                     </Link>
                 </div>

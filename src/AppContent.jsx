@@ -3,6 +3,8 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
+import WhyChooseUs from "./components/WhyChooseUs";
+import HowItWorks from "./components/HowItWorks";
 import ProductSection from "./components/FeatureSection";
 import Workflow from "./components/Workflow";
 import AboutMeSection from "./components/AboutMeSection";
@@ -75,11 +77,13 @@ const AppContent = ({ cart, addToCart, removeFromCart }) => {
                   <SEO /> {/* Default SEO for Home */}
                   {/* Le pasamos la prop dolarOficial */}
                   <HeroSection id="inicio" dolarOficial={dolarOficial} />
+                  <WhyChooseUs />
                   <ProductSection
                     id="servicios"
                     cart={cart}
                     addToCart={addToCart}
                   />
+                  <HowItWorks />
                   <Workflow id="como-trabajamos" />
                   <FAQ id="preguntasfreceuntes" />
                   <AboutMeSection id="sobre-mi" />
@@ -204,7 +208,14 @@ const AppContent = ({ cart, addToCart, removeFromCart }) => {
       {location.pathname !== '/login' && <Footer id="contacto" />}
 
       {/* Renderizar chatbot según la ruta, ocultar en login */}
-      {location.pathname !== '/login' && (isAdminRoute ? <ChatAudacesWidget /> : <ChatVendedor />)}
+      {location.pathname !== '/login' && (
+        isAdminRoute ? (
+          <ChatAudacesWidget />
+        ) : (
+          /* Si hay tenant, validar bot_enabled. Si no (landing principal), mostrar por defecto. */
+          (!tenant || tenant.bot_enabled) && <ChatVendedor />
+        )
+      )}
     </>
   );
 };

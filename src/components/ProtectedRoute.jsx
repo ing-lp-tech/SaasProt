@@ -1,8 +1,10 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTenant } from '../contexts/TenantContext';
 
 export default function ProtectedRoute({ children, allowedRoles }) {
     const { user, role, loading } = useAuth();
+    const { tenant } = useTenant();
 
     if (loading) {
         return (
@@ -23,7 +25,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
     if (allowedRoles && (!role || !allowedRoles.includes(role))) {
         // Optional: Redirect to a "Unauthorized" page or just home
-        return <Navigate to="/" replace />;
+        return <Navigate to={tenant ? `/?tenant=${tenant.subdomain}` : "/"} replace />;
     }
 
     return children;

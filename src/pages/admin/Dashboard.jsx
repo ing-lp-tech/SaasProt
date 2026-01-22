@@ -26,7 +26,7 @@ export default function Dashboard() {
             <div className="dashboard-grid">
                 {/* VISTA PARA ADMINISTRADOR DE TIENDA (CLIENTE) O SUPER ADMIN (GOD MODE) */}
                 {/* Solo mostrar si NO es Super Admin, O si es Super Admin PERO está dentro de un tenant (God Mode activo) */}
-                {(role === 'admin' || role === 'tenant_owner') && (
+                {(role === 'admin' || role === 'tenant_owner' || (role === 'owner' && tenant)) && (
                     <>
                         <div className="dashboard-card bg-blue-50 hover:bg-blue-100" onClick={() => window.open('/', '_blank')}>
                             <Globe size={32} className="text-blue-600" />
@@ -73,7 +73,7 @@ export default function Dashboard() {
                 )}
 
                 {/* VISTA PARA SUPER ADMIN (DUEÑO SAAS) */}
-                {role === 'owner' && (
+                {role === 'owner' && !tenant && (
                     <>
                         <div className="dashboard-card bg-purple-50 hover:bg-purple-100" onClick={() => navigate('/admin/tenants')}>
                             <Folder size={32} className="text-purple-600" />

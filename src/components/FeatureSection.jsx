@@ -59,7 +59,7 @@ const ProductModal = ({
       case "plotters":
         return (
           <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
               <div>
                 <p className="font-semibold">Pre-venta (USD):</p>
                 <p>${product.precio_pre_venta.toLocaleString()}</p>
@@ -82,7 +82,7 @@ const ProductModal = ({
                   }, e);
                   onClose();
                 }}
-                className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition"
+                className="bg-primary text-white px-3 py-2 rounded hover:brightness-90 transition"
               >
                 Añadir al carrito
               </button>
@@ -127,7 +127,7 @@ const ProductModal = ({
             {Object.entries(product.combos).map(([combo, price]) => (
               <div
                 key={combo}
-                className="flex justify-between items-center p-3 bg-blue-50 rounded-lg"
+                className="flex justify-between items-center p-3 bg-primary/5 rounded-lg"
               >
                 <div>
                   <p className="font-semibold capitalize">
@@ -150,7 +150,7 @@ const ProductModal = ({
                     }, e);
                     onClose();
                   }}
-                  className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition"
+                  className="bg-primary text-white px-3 py-2 rounded hover:brightness-90 transition"
                 >
                   Añadir al carrito
                 </button>
@@ -183,7 +183,7 @@ const ProductModal = ({
               </p>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
               <div>
                 <p className="font-semibold">Combo Básico:</p>
                 <p>${product.combos.basico.toLocaleString()}</p>
@@ -200,7 +200,7 @@ const ProductModal = ({
                   }, e);
                   onClose();
                 }}
-                className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition"
+                className="bg-primary text-white px-3 py-2 rounded hover:brightness-90 transition"
               >
                 Añadir al carrito
               </button>
@@ -377,9 +377,9 @@ const ProductModal = ({
 
             {/* Precio USD */}
             {product.precio_usd && (
-              <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-primary/5 rounded-lg">
                 <div>
-                  <p className="font-semibold text-blue-900">Precio Regular (USD):</p>
+                  <p className="font-semibold text-primary">Precio Regular (USD):</p>
                   <p className="text-xl font-bold">${product.precio_usd.toLocaleString()}</p>
                   {dolarOficial && <p className="text-sm text-gray-600">ARS: ${(product.precio_usd * dolarOficial).toLocaleString()}</p>}
                 </div>
@@ -392,7 +392,7 @@ const ProductModal = ({
                     name: product.nombre || product.name,
                     image: getProductImage(product)
                   }, e)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                  className="bg-primary text-white px-4 py-2 rounded-lg hover:brightness-90 transition flex items-center gap-2"
                 >
                   <ShoppingCart size={18} />
                   Añadir
@@ -402,9 +402,9 @@ const ProductModal = ({
 
             {/* Precio ARS */}
             {product.precio_ars && (
-              <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-primary/5 rounded-lg">
                 <div>
-                  <p className="font-semibold text-blue-900">Precio Regular (ARS):</p>
+                  <p className="font-semibold text-primary">Precio Regular (ARS):</p>
                   <p className="text-xl font-bold">${parseFloat(product.precio_ars).toLocaleString()}</p>
                 </div>
                 <button
@@ -416,7 +416,7 @@ const ProductModal = ({
                     name: product.nombre || product.name,
                     image: getProductImage(product)
                   }, e)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                  className="bg-primary text-white px-4 py-2 rounded-lg hover:brightness-90 transition flex items-center gap-2"
                 >
                   <ShoppingCart size={18} />
                   Añadir
@@ -653,12 +653,13 @@ const ProductSection = ({ id, cart, addToCart }) => {
     };
 
     const fetchCategorias = async () => {
-      // Opcional: también podríamos filtrar categorías por tenant si la tabla tuviera tenant_id
+      if (!tenant) return;
       try {
         const { data, error } = await supabase
           .from('categorias')
           .select('*')
           .eq('activo', true)
+          .eq('tenant_id', tenant.id)
           .order('orden', { ascending: true });
 
         if (error) throw error;
@@ -697,17 +698,7 @@ const ProductSection = ({ id, cart, addToCart }) => {
     if (activeFilter === "all") {
       filtered = [...productosSupabase];
     } else {
-      // Mapeo de filtros a categorías de Supabase
-      const filterMap = {
-        "plotters": ["Plotters inyección", "Plotters corte"],
-        "papers": ["Papel marrón", "Papel blanco"],
-        "pcs": ["Computadoras"],
-        "kitCameras": ["Seguridad"],
-        "imouCams": ["Seguridad"]
-      };
-
-      const categoriasValidas = filterMap[activeFilter] || [];
-      filtered = productosSupabase.filter(p => categoriasValidas.includes(p.categoria));
+      filtered = productosSupabase.filter(p => p.categoria === activeFilter);
     }
 
     // Aplicar ordenamiento por categoría
@@ -747,12 +738,12 @@ const ProductSection = ({ id, cart, addToCart }) => {
 
       <div id={id} className="relative mt-4 min-h-[800px]">
         <div className="text-center">
-          <span className="bg-blue-600 text-white rounded-full h-6 text-sm font-medium px-2 py-1 uppercase">
+          <span className="bg-primary text-white rounded-full h-6 text-sm font-medium px-2 py-1 uppercase">
             Catálogo
           </span>
           <h2 className="text-3xl sm:text-5xl lg:text-6xl mt-10 lg:mt-20 tracking-wide text-gray-900 dark:text-white">
             Nuestros{" "}
-            <span className="bg-gradient-to-r from-blue-500 to-blue-800 text-transparent bg-clip-text">
+            <span className="text-primary">
               Productos
             </span>
           </h2>
@@ -760,10 +751,10 @@ const ProductSection = ({ id, cart, addToCart }) => {
 
         <Link
           to="/cart"
-          className="fixed top-24 right-4 z-40 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center"
+          className="fixed top-24 right-4 z-40 bg-primary text-white p-3 rounded-full shadow-lg hover:brightness-110 transition flex items-center"
         >
           <ShoppingCart className="h-6 w-6" />
-          <span className="ml-1 bg-white text-blue-600 rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold">
+          <span className="ml-1 bg-white text-primary rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold">
             {cart.length}
           </span>
         </Link>
@@ -774,57 +765,32 @@ const ProductSection = ({ id, cart, addToCart }) => {
             <button
               onClick={() => handleFilterChange("all")}
               className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === "all"
-                ? "bg-blue-600 text-white shadow-blue-200"
+                ? "bg-primary text-white shadow-primary/30"
                 : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
                 }`}
             >
               Todos
             </button>
-            <button
-              onClick={() => handleFilterChange("plotters")}
-              className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === "plotters"
-                ? "bg-blue-600 text-white shadow-blue-200"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                }`}
-            >
-              Plotters
-            </button>
-            <button
-              onClick={() => handleFilterChange("papers")}
-              className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === "papers"
-                ? "bg-blue-600 text-white shadow-blue-200"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                }`}
-            >
-              Papeles
-            </button>
-            <button
-              onClick={() => handleFilterChange("pcs")}
-              className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === "pcs"
-                ? "bg-blue-600 text-white shadow-blue-200"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                }`}
-            >
-              PCs Armadas
-            </button>
-            <button
-              onClick={() => handleFilterChange("kitCameras")}
-              className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === "kitCameras"
-                ? "bg-blue-600 text-white shadow-blue-200"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                }`}
-            >
-              Kits Seguridad
-            </button>
-            <button
-              onClick={() => handleFilterChange("imouCams")}
-              className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === "imouCams"
-                ? "bg-blue-600 text-white shadow-blue-200"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                }`}
-            >
-              Cámaras WiFi
-            </button>
+            {categorias.length > 0 ? (
+              categorias.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => handleFilterChange(cat.nombre)}
+                  className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === cat.nombre
+                    ? "bg-primary text-white shadow-primary/30"
+                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                    }`}
+                >
+                  {cat.nombre}
+                </button>
+              ))
+            ) : (
+              tenant && (
+                <div className="text-gray-500 italic text-sm px-4 py-2">
+                  No hay categorías definidas.
+                </div>
+              )
+            )}
           </div>
         </div>
 
@@ -903,11 +869,7 @@ const ProductSection = ({ id, cart, addToCart }) => {
               <div className="text-center">
                 <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-8">
                   <span className="border-b-4 border-blue-500 pb-2">
-                    {activeFilter === "plotters" ? "Nuestros Plotters" :
-                      activeFilter === "papers" ? "Nuestros Papeles" :
-                        activeFilter === "pcs" ? "Nuestras PCs" :
-                          activeFilter === "kitCameras" ? "Kits de Cámaras" :
-                            "Cámaras IMOU"}
+                    {activeFilter}
                   </span>
                 </h3>
 
@@ -939,9 +901,14 @@ const ProductSection = ({ id, cart, addToCart }) => {
               <ShoppingCart className="h-10 w-10 text-gray-400" />
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Esta tienda aún no tiene productos</h3>
-            <p className="text-gray-500">
-              El administrador está configurando el catálogo. ¡Vuelve pronto!
+            <p className="text-gray-500 mb-6">
+              El catálogo está vacío o no se pudieron cargar los productos.
             </p>
+            {/* Hint for owner */}
+            <div className="bg-blue-50 text-blue-800 p-4 rounded-lg inline-block text-sm max-w-md">
+              <p className="font-semibold mb-1">💡 ¿Eres el dueño?</p>
+              <p>Ve a tu Panel de Admin {'>'} Categorías y crea tu primera categoría (ej: "Camisas", "Zapatos"). Luego añade productos en la sección Productos.</p>
+            </div>
           </div>
         )}
 

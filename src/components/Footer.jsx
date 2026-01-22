@@ -69,8 +69,8 @@ const Footer = ({ id }) => {
   const { tenant } = useTenant();
   const [footerLogo, setFooterLogo] = useState(logoluisys);
   const [footerTitle, setFooterTitle] = useState("Síguenos en nuestras redes");
-  const [footerCopyright, setFooterCopyright] = useState("");
-  const [footerDesignedBy, setFooterDesignedBy] = useState("Ing. Luis Patty Mamani"); const [footerDesignedByUrl, setFooterDesignedByUrl] = useState("https://www.linkedin.com/in/luis-patty-mamani/");
+  /* const [footerCopyright, setFooterCopyright] = useState(""); */
+  /* const [footerDesignedBy, setFooterDesignedBy] = useState("Ing. Luis Patty Mamani"); const [footerDesignedByUrl, setFooterDesignedByUrl] = useState("https://www.linkedin.com/in/luis-patty-mamani/"); */
   const [socialLinks, setSocialLinks] = useState([]);
 
   useEffect(() => {
@@ -81,9 +81,9 @@ const Footer = ({ id }) => {
 
       if (config.footer_logo_url) setFooterLogo(config.footer_logo_url);
       if (config.footer_title) setFooterTitle(config.footer_title);
-      if (config.footer_copyright) setFooterCopyright(config.footer_copyright);
-      if (config.footer_designed_by) setFooterDesignedBy(config.footer_designed_by);
-      if (config.footer_designed_by_url) setFooterDesignedByUrl(config.footer_designed_by_url);
+      /* if (config.footer_copyright) setFooterCopyright(config.footer_copyright); */
+      /* if (config.footer_designed_by) setFooterDesignedBy(config.footer_designed_by);
+      if (config.footer_designed_by_url) setFooterDesignedByUrl(config.footer_designed_by_url); */
 
       // Construir array de redes sociales solo con las que tengan URL
       const links = [];
@@ -191,16 +191,16 @@ const Footer = ({ id }) => {
 
         {/* Información adicional */}
         <div className="text-center text-neutral-400">
-          <p>© {new Date().getFullYear()} {footerCopyright || "Todos los derechos reservados."}</p>
+          <p>© {new Date().getFullYear()} {tenant?.name || "Ingeniero Emprendedor"}. Todos los derechos reservados.</p>
           <p className="mt-2">
             Diseñado por{" "}
             <a
-              href={footerDesignedByUrl}
+              href="https://www.linkedin.com/in/luis-patty-mamani/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white transition-colors duration-300"
             >
-              {footerDesignedBy}
+              Ing. Luis Patty Mamani
             </a>
           </p>
         </div>

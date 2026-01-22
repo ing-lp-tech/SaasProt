@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
-import { Package, Globe, LayoutDashboard, Edit, Trash2, Save, ExternalLink, ArrowLeft, Info, X } from 'lucide-react';
+import { Package, Globe, LayoutDashboard, Edit, Trash2, Save, ExternalLink, ArrowLeft, Info, X, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TenantManager = () => {
@@ -125,6 +125,23 @@ const TenantManager = () => {
         } catch (error) {
             console.error(error);
             setMessage({ type: 'error', text: 'Error extendiendo trial' });
+        }
+    };
+
+    const handleToggleBot = async (tenant) => {
+        try {
+            const newStatus = !tenant.bot_enabled;
+            const { error } = await supabase
+                .from('tenants')
+                .update({ bot_enabled: newStatus })
+                .eq('id', tenant.id);
+
+            if (error) throw error;
+            setMessage({ type: 'success', text: `Bot ${newStatus ? 'ACTIVADO' : 'DESACTIVADO'} para ${tenant.name}` });
+            fetchTenants();
+        } catch (error) {
+            console.error(error);
+            setMessage({ type: 'error', text: 'Error actualizando estado del bot' });
         }
     };
 
@@ -428,7 +445,7 @@ const TenantManager = () => {
                                                     </a>
                                                 </div>
 
-                                                {/* Botón Entrar Admin */}
+                                                {/* Botón Admin */}
                                                 <div onClick={e => e.stopPropagation()}>
                                                     <a
                                                         href={`/admin/dashboard?tenant=${tenant.subdomain}`}
@@ -439,6 +456,19 @@ const TenantManager = () => {
                                                         <LayoutDashboard size={14} /> Admin
                                                     </a>
                                                 </div>
+
+                                                {/* Toggle Bot */}
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleToggleBot(tenant); }}
+                                                    className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded border transition-colors ${tenant.bot_enabled
+                                                        ? 'bg-cyan-900/40 hover:bg-cyan-900/60 text-cyan-400 border-cyan-800'
+                                                        : 'bg-gray-700 hover:bg-gray-600 text-gray-400 border-gray-600'
+                                                        }`}
+                                                    title={tenant.bot_enabled ? "Desactivar ChatBot" : "Activar ChatBot"}
+                                                >
+                                                    <Bot size={14} />
+                                                    {tenant.bot_enabled ? 'Bot ON' : 'Bot OFF'}
+                                                </button>
 
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); handleStartEdit(tenant); }}
@@ -537,6 +567,16 @@ const TenantManager = () => {
                                             Ver Logo
                                         </a>
                                     )}
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-900 p-4 rounded-lg border border-gray-700">
+                                <p className="text-sm text-gray-500 mb-2">Características Adicionales</p>
+                                <div className="flex items-center gap-2">
+                                    <Bot size={18} className={selectedTenant.bot_enabled ? "text-cyan-400" : "text-gray-600"} />
+                                    <span className={selectedTenant.bot_enabled ? "text-white" : "text-gray-500"}>
+                                        ChatBot IA: {selectedTenant.bot_enabled ? "ACTIVADO" : "DESACTIVADO"}
+                                    </span>
                                 </div>
                             </div>
 

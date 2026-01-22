@@ -139,7 +139,7 @@ export default function CategoryManager() {
                         <ArrowLeft size={18} /> Dashboard
                     </Link>
                     <a
-                        href="/"
+                        href={tenant ? `/?tenant=${tenant.subdomain}` : "/"}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{

@@ -11,10 +11,12 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import logoLucfra from "../assets/lucfra_t.png";
 import { Link } from "react-router-dom";
+import { useTenant } from '../contexts/TenantContext';
 import luis from "../assets/luis.jpg";
 import avatarLuisPatty from "../assets/avatarLuisPattyJpg.jpg";
 
 const ComunidadPage = () => {
+  const { tenant } = useTenant();
   // Estados para insumos
   const [insumos, setInsumos] = useState([]);
   const [nuevoInsumo, setNuevoInsumo] = useState({
@@ -160,7 +162,7 @@ const ComunidadPage = () => {
     <div className="max-w-4xl mx-auto p-4 md:p-6">
       <div className="flex flex-col items-center justify-center mt-12 mb-8">
         <div className="flex justify-between items-center">
-          <Link to="/">
+          <Link to={tenant ? `/?tenant=${tenant.subdomain}` : "/"}>
             <img
               className="h-14 w-40 object-contain"
               src={avatarLuisPatty}

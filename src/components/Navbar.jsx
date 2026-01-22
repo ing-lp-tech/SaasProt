@@ -118,7 +118,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut();
-    navigate("/");
+    navigate(tenant ? `/?tenant=${tenant.subdomain}` : "/");
   };
 
   const toggleNavbar = () => {
@@ -130,7 +130,7 @@ const Navbar = () => {
       <nav className="sticky top-0 z-50 py-3 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md shadow-md border-b border-neutral-300 dark:border-gray-700 transition-colors">
         <div className="container px-4 mx-auto">
           <div className="flex justify-between items-center">
-            <Link to="/" className="flex items-center">
+            <Link to={tenant?.subdomain ? `/?tenant=${tenant.subdomain}` : "/"} className="flex items-center">
               {logoUrl ? (
                 <img
                   className="h-14 w-auto object-contain max-w-[200px]"
@@ -151,14 +151,14 @@ const Navbar = () => {
                   {item.href.startsWith("#") ? (
                     <a
                       href={item.href}
-                      className="hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                      className="hover:text-primary dark:hover:text-primary transition-all"
                     >
                       {item.label}
                     </a>
                   ) : (
                     <Link
                       to={item.href}
-                      className="hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                      className="hover:text-primary dark:hover:text-primary transition-all"
                     >
                       {item.label}
                     </Link>
@@ -182,7 +182,7 @@ const Navbar = () => {
                 {user ? (
                   <Link
                     to="/admin/dashboard"
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all shadow-md hover:shadow-lg"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-all shadow-md hover:shadow-lg"
                   >
                     <User size={18} />
                     Admin
@@ -190,7 +190,7 @@ const Navbar = () => {
                 ) : (
                   <Link
                     to="/login"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:brightness-110 transition-all shadow-md hover:shadow-lg"
                   >
                     <LogIn size={18} />
                     Login
@@ -201,7 +201,7 @@ const Navbar = () => {
 
             {/* Botón menú móvil */}
             <div className="lg:hidden">
-              <button onClick={toggleNavbar} aria-label="Toggle Menu" className="p-2 text-neutral-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <button onClick={toggleNavbar} aria-label="Toggle Menu" className="p-2 text-neutral-800 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors">
                 {mobileDrawerOpen ? <X size={28} /> : <Menu size={28} />}
               </button>
             </div>
@@ -217,7 +217,7 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 bg-blue-600 z-[100] flex flex-col items-center justify-center lg:hidden"
+            className="fixed inset-0 bg-primary z-[100] flex flex-col items-center justify-center lg:hidden"
           >
             <div className="absolute top-4 right-4">
               <button onClick={toggleNavbar} aria-label="Close Menu">
@@ -255,7 +255,7 @@ const Navbar = () => {
                 <Link
                   to="/admin/dashboard"
                   onClick={() => setMobileDrawerOpen(false)}
-                  className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-full text-xl shadow-lg hover:bg-gray-100 transition-all w-full justify-center"
+                  className="flex items-center gap-2 px-6 py-3 bg-white text-gray-800 rounded-full text-xl shadow-lg hover:bg-gray-100 transition-all w-full justify-center"
                 >
                   <User size={24} />
                   Panel Admin
@@ -264,7 +264,7 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileDrawerOpen(false)}
-                  className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-full text-xl shadow-lg hover:bg-gray-100 transition-all w-full justify-center"
+                  className="flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-full text-xl shadow-lg hover:bg-gray-100 transition-all w-full justify-center"
                 >
                   <LogIn size={24} />
                   Iniciar Sesión

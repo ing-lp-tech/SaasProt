@@ -3,6 +3,7 @@ import { siteConfigService } from "../../services/siteConfigService";
 import { Save, Upload, Loader, Plus, Trash2, ChevronDown, ChevronUp, ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTenant } from "../../contexts/TenantContext";
+import { THEMES } from "../../constants/themes";
 
 export const SiteConfigEditor = () => {
     const { tenant } = useTenant();
@@ -16,12 +17,14 @@ export const SiteConfigEditor = () => {
     const [workflowSteps, setWorkflowSteps] = useState([]);
     const [faqCategories, setFaqCategories] = useState([]);
     const [carouselImages, setCarouselImages] = useState([]);
+    const [whyChooseFeatures, setWhyChooseFeatures] = useState([]);
 
     // Estados para secciones colapsables
     const [expandedSections, setExpandedSections] = useState({
         images: false,
         hero: false,
         carousel: false,
+        whychoose: false,
         about: false,
         workflow: false,
         faq: false,
@@ -77,6 +80,13 @@ export const SiteConfigEditor = () => {
             if (faqContent) {
                 const parsed = typeof faqContent === 'string' ? JSON.parse(faqContent) : faqContent;
                 setFaqCategories(Array.isArray(parsed) ? parsed : []);
+            } else {
+                // Pre-cargar defaults si no hay contenido guardado
+                const presetId = data?.preset_id || 'default';
+                const theme = THEMES.find(t => t.id === presetId);
+                if (theme?.defaultFaqs) {
+                    setFaqCategories(theme.defaultFaqs);
+                }
             }
         } catch (e) {
             console.error('Error parsing faq_content:', e);
@@ -91,6 +101,17 @@ export const SiteConfigEditor = () => {
             }
         } catch (e) {
             console.error('Error parsing hero_carousel_images:', e);
+        }
+
+        // Parsear why_choose_features
+        try {
+            const whyChooseContent = data?.why_choose_features;
+            if (whyChooseContent) {
+                const parsed = typeof whyChooseContent === 'string' ? JSON.parse(whyChooseContent) : whyChooseContent;
+                setWhyChooseFeatures(Array.isArray(parsed) ? parsed : []);
+            }
+        } catch (e) {
+            console.error('Error parsing why_choose_features:', e);
         }
 
         setLoading(false);
@@ -235,7 +256,8 @@ export const SiteConfigEditor = () => {
                 about_content: JSON.stringify(aboutItems),
                 workflow_content: JSON.stringify(workflowSteps),
                 faq_content: JSON.stringify(faqCategories),
-                hero_carousel_images: JSON.stringify(carouselImages.filter(img => img !== null))
+                hero_carousel_images: JSON.stringify(carouselImages.filter(img => img !== null)),
+                why_choose_features: JSON.stringify(whyChooseFeatures.filter(f => f.title))
             };
 
             // Guardar todo en una sola operación
@@ -279,7 +301,7 @@ export const SiteConfigEditor = () => {
                             Dashboard
                         </Link>
                         <a
-                            href="/"
+                            href={tenant ? `/?tenant=${tenant.subdomain}` : "/"}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition font-medium border border-blue-200"
@@ -670,42 +692,92 @@ export const SiteConfigEditor = () => {
                     <div className="p-6 bg-gray-50 rounded-lg space-y-6">
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-2">
-                                Tipo de Tienda (Estilo Visual)
+                                Elige una Plantilla / Tema
                             </label>
-                            <p className="text-sm text-gray-500 mb-2">
-                                Esto define la paleta de colores, tipografías y formas de tu tienda.
+                            <p className="text-sm text-gray-500 mb-4">
+                                Selecciona un estilo predefinido para cambiar los colores y tipografía de tu tienda al instante.
                             </p>
-                            <select
-                                value={configs.store_type || "unisex"}
-                                onChange={(e) => setConfigs({ ...configs, store_type: e.target.value })}
-                                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                            >
-                                <option value="mujer">Femenino (Elegante, Serif, Tonos Suaves)</option>
-                                <option value="hombre">Masculino (Robusto, Sans-Serif, Tonos Oscuros)</option>
-                                <option value="ninos">Infantil (Divertido, Redondeado, Colores Vivos)</option>
-                                <option value="unisex">Tecnología / Unisex (Moderno, Minimalista, Azul)</option>
-                            </select>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {THEMES.map((theme) => (
+                                    <button
+                                        key={theme.id}
+                                        onClick={() => {
+                                            setConfigs({
+                                                ...configs,
+                                                primary_color: theme.colors.primary, // Use snake_case for DB
+                                                primaryColor: theme.colors.primary, // Keep camelCase for local UI state if needed
+                                                font: theme.font,
+                                                preset_id: theme.id
+                                            });
+                                        }}
+                                        className={`p-4 rounded-xl border-2 text-left transition-all hover:scale-[1.02] flex flex-col gap-2 relative overflow-hidden ${configs.preset_id === theme.id || (theme.id === 'default' && !configs.preset_id)
+                                            ? 'border-blue-500 ring-2 ring-blue-200 bg-white'
+                                            : 'border-transparent bg-white shadow-md hover:shadow-lg'
+                                            }`}
+                                    >
+                                        <div className="flex items-center justify-between w-full">
+                                            <span className="font-bold text-gray-800">{theme.name}</span>
+                                            {configs.preset_id === theme.id && <span className="text-xl">✅</span>}
+                                        </div>
+                                        <p className="text-xs text-gray-500">{theme.description}</p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                            <div
+                                                className="w-8 h-8 rounded-full border border-gray-200 shadow-sm"
+                                                style={{ backgroundColor: theme.colors.primary }}
+                                                title={`Color Primario: ${theme.colors.primary}`}
+                                            ></div>
+                                            <span className="text-xs px-2 py-1 bg-gray-100 rounded border border-gray-200 font-mono">
+                                                {theme.font}
+                                            </span>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    Color Primario (Opcional)
-                                </label>
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="color"
-                                        value={configs.theme_primary_color || "#2563eb"}
-                                        onChange={(e) => setConfigs({ ...configs, theme_primary_color: e.target.value })}
-                                        className="h-10 w-10 p-1 rounded cursor-pointer border"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={configs.theme_primary_color || ""}
-                                        onChange={(e) => setConfigs({ ...configs, theme_primary_color: e.target.value })}
-                                        placeholder="#2563eb"
-                                        className="flex-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase"
-                                    />
+                        {/* Custom Override */}
+                        <div className="border-t pt-4 mt-4">
+                            <h4 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                <span>🛠️</span> Ajustes Manuales (Sobrescribir)
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                        Color Primario
+                                    </label>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="color"
+                                            value={configs.primary_color || configs.primaryColor || "#3b82f6"}
+                                            onChange={(e) => setConfigs({ ...configs, primary_color: e.target.value, primaryColor: e.target.value, preset_id: 'custom' })}
+                                            className="h-10 w-10 p-1 rounded cursor-pointer border bg-white"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={configs.primary_color || configs.primaryColor || ""}
+                                            onChange={(e) => setConfigs({ ...configs, primary_color: e.target.value, primaryColor: e.target.value, preset_id: 'custom' })}
+                                            placeholder="#3b82f6"
+                                            className="flex-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                        Tipografía
+                                    </label>
+                                    <select
+                                        value={configs.font || "Poppins"}
+                                        onChange={(e) => setConfigs({ ...configs, font: e.target.value, preset_id: 'custom' })}
+                                        className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                    >
+                                        <option value="Poppins">Poppins (Default)</option>
+                                        <option value="Playfair Display">Playfair Display (Elegante)</option>
+                                        <option value="Merriweather">Merriweather (Serif)</option>
+                                        <option value="Quicksand">Quicksand (Rounded)</option>
+                                        <option value="Fredoka">Fredoka (Fun)</option>
+                                        <option value="Orbitron">Orbitron (Tech)</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -789,7 +861,7 @@ export const SiteConfigEditor = () => {
                             </div>
                         </div>
                         <div className="border-t pt-4 mt-6">
-                            <div className="mb-4">
+                            {/* <div className="mb-4">
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Texto Copyright</label>
                                 <input
                                     type="text"
@@ -798,29 +870,8 @@ export const SiteConfigEditor = () => {
                                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
                                     placeholder="Ej: Todos los derechos reservados."
                                 />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">"Diseñado por" Nombre</label>
-                                    <input
-                                        type="text"
-                                        value={configs.footer_designed_by || ""}
-                                        onChange={(e) => setConfigs({ ...configs, footer_designed_by: e.target.value })}
-                                        className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="Ej: Ing. Luis Patty Mamani"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">"Diseñado por" URL</label>
-                                    <input
-                                        type="url"
-                                        value={configs.footer_designed_by_url || ""}
-                                        onChange={(e) => setConfigs({ ...configs, footer_designed_by_url: e.target.value })}
-                                        className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                            </div>
+                            </div> */}
+                            {/* Créditos de diseño fijos por código */}
                         </div>
                     </div>
                 )}

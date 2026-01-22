@@ -62,90 +62,79 @@ const HeroSection = ({ id, dolarOficial }) => {
   }, [tenant]); // Dependencia del tenant
 
   return (
-    <>
-      <div id={id} className="flex flex-col items-center mt-4 mb-0 lg:mt-10 overflow-hidden w-full">
-        <div className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 w-full transition-colors duration-300">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 md:gap-12">
-              <div className="w-full md:w-1/2 text-center md:text-left">
-                <div className="items-center justify-between hidden md:block">
-                  {heroLogoUrl && (
-                    <img
-                      className="w-full max-w-[200px] mb-4"
-                      src={heroLogoUrl} // Dinámico
-                      alt="Logo Hero"
-                    />
-                  )}
-                </div>
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-4 sm:mb-6 leading-tight">
-                  {heroTitle}
-                </h1>
+    <section id={id} className="relative w-full min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden">
+      {/* Background Image/Carousel */}
+      <div className="absolute inset-0 w-full h-full">
+        {heroCarouselImages.length > 0 ? (
+          <HeroCarousel images={heroCarouselImages} />
+        ) : heroMainImageUrl ? (
+          <img
+            src={heroMainImageUrl}
+            alt="Hero Background"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-white dark:from-gray-900 dark:to-gray-800"></div>
+        )}
 
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0">
-                  {heroDescription}
-                </p>
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/20 dark:from-black/70 dark:via-black/50 dark:to-black/30"></div>
+      </div>
 
-                {/* Botones ocultos a pedido del usuario (12/1/2026)
-                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                  ... (código comentado sin cambios)
-                </div>
-                */}
-
-                <div className="mt-8 flex items-center justify-center md:justify-start space-x-4">
-                  <div className="flex -space-x-2">
-                    {/* Iconos de clientes o marcas */}
-                  </div>
-                </div>
+      {/* Content */}
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-12 xl:px-16 py-12 md:py-0">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-2xl">
+            {/* Badge/Tag */}
+            {heroSubtitle && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/90 text-white rounded-full text-sm font-semibold mb-6 shadow-lg backdrop-blur-sm">
+                <span>🛍️</span>
+                <span>{heroSubtitle}</span>
               </div>
+            )}
 
-              {/* Imagen destacada */}
-              <div className="w-full md:w-1/2 relative">
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-700 h-[400px]">
-                  {heroCarouselImages.length > 0 ? (
-                    <HeroCarousel images={heroCarouselImages} />
-                  ) : heroMainImageUrl ? (
-                    <img
-                      className="w-full h-full object-cover transform hover:scale-105 transition duration-500"
-                      src={heroMainImageUrl}
-                      alt="Plotter industrial en funcionamiento"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 dark:text-gray-500">
-                      Sin imagen de portada
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
-                </div>
-                {/* Mobile only additional logo if needed */}
-                <div className="md:hidden mt-4 flex justify-center">
-                  {heroLogoUrl && (
-                    <img
-                      className="w-32 object-contain"
-                      src={heroLogoUrl} // Dinámico
-                      alt="Logo"
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
+            {/* Main Title */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
+              {heroTitle}
+            </h1>
 
-            {/* Logos de marcas o certificaciones */}
-            <div className="mt-16 sm:mt-20">
-              <h3 className="text-center text-gray-400 dark:text-gray-500 text-sm font-bold tracking-widest mb-8 uppercase">
-                TRABAJAMOS CON LAS MEJORES MARCAS
-              </h3>
-              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                <img
-                  className="h-10 sm:h-12"
-                  src={avatarLuisPatty}
-                  alt="Marca 1"
-                />
-              </div>
+            {/* Description */}
+            <p className="text-base sm:text-lg md:text-xl text-white/90 mb-8 leading-relaxed drop-shadow-lg max-w-xl">
+              {heroDescription}
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a
+                href="#productos"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:brightness-110 text-white font-bold rounded-lg shadow-xl transition-all transform hover:scale-105 text-base sm:text-lg"
+              >
+                Ver Catálogo
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold rounded-lg border-2 border-white/50 shadow-xl transition-all text-base sm:text-lg"
+              >
+                Contactar
+              </a>
             </div>
           </div>
         </div>
       </div>
-    </>
+
+      {/* Scroll Indicator (opcional) */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden md:block animate-bounce">
+        <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+    </section>
   );
 };
 

@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { faqData } from "../constants";
 import { siteConfigService } from "../services/siteConfigService";
 import { useTenant } from "../contexts/TenantContext";
+import { THEMES } from "../constants/themes";
 
 export default function FAQ({ items }) {
   const { tenant } = useTenant();
@@ -16,6 +17,8 @@ export default function FAQ({ items }) {
 
       const config = await siteConfigService.getAllConfigs(tenant.id);
       if (config.faq_title) setFaqTitle(config.faq_title);
+
+      // 1. Intentar cargar contenido personalizado
       if (config.faq_content) {
         try {
           const parsed = typeof config.faq_content === 'string'
@@ -23,10 +26,18 @@ export default function FAQ({ items }) {
             : config.faq_content;
           if (Array.isArray(parsed) && parsed.length > 0) {
             setDynamicFaqs(parsed);
+            return;
           }
         } catch (e) {
           console.error('Error parsing FAQ content:', e);
         }
+      }
+
+      // 2. Si no hay personalizado, cargar default del tema
+      const presetId = config.preset_id || 'default';
+      const theme = THEMES.find(t => t.id === presetId);
+      if (theme?.defaultFaqs) {
+        setDynamicFaqs(theme.defaultFaqs);
       }
     };
 

@@ -60,7 +60,7 @@ const CartPage = ({ cart, removeFromCart, clearCart }) => {
   return (
     <div className="py-8 px-4">
       <div className="flex items-center mb-8">
-        <Link to="/" className="mr-4 text-blue-600 hover:text-blue-800">
+        <Link to={tenant ? `/?tenant=${tenant.subdomain}` : "/"} className="mr-4 text-blue-600 hover:text-blue-800">
           <ArrowLeft className="h-6 w-6" />
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold">
@@ -73,7 +73,7 @@ const CartPage = ({ cart, removeFromCart, clearCart }) => {
           <ShoppingBag className="h-16 w-16 mx-auto text-gray-400 mb-4" />
           <p className="text-xl text-gray-600 mb-6">Tu carrito está vacío</p>
           <Link
-            to="/"
+            to={tenant ? `/?tenant=${tenant.subdomain}` : "/"}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition inline-block"
           >
             Ver productos
@@ -163,7 +163,7 @@ const CartPage = ({ cart, removeFromCart, clearCart }) => {
               </button>
 
               <Link
-                to="/"
+                to={tenant ? `/?tenant=${tenant.subdomain}` : "/"}
                 className="block mt-4 text-center text-blue-600 hover:text-blue-800"
               >
                 Continuar comprando

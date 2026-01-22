@@ -118,6 +118,9 @@ export const TenantProvider = ({ children }) => {
                         const root = document.documentElement;
                         const primaryColor = finalConfig.primaryColor || finalConfig.primary_color;
                         if (primaryColor) root.style.setProperty('--color-primary', primaryColor);
+
+                        const font = finalConfig.font;
+                        if (font) root.style.setProperty('--font-primary', `"${font}"`);
                     }
 
                     // 4. Validar Plan (Trial/Expired)
