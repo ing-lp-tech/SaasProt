@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
 import comotrabajamos from "../assets/comotrabajamos.jpg";
-import { checklistItems } from "../constants";
+
 import { siteConfigService } from "../services/siteConfigService";
 import { useTenant } from "../contexts/TenantContext";
 
@@ -39,7 +39,22 @@ const Workflow = ({ id }) => {
     }
   }, [tenant]);
 
-  const stepsToDisplay = workflowSteps || checklistItems;
+  const defaultSteps = [
+    {
+      title: "Paso 1: Describe tu proceso",
+      description: "Edita este paso en el panel de administración para explicar cómo funciona tu negocio."
+    },
+    {
+      title: "Paso 2: Personaliza la experiencia",
+      description: "Agrega detalles importantes sobre envíos, tiempos de entrega o métodos de pago."
+    },
+    {
+      title: "Paso 3: Cierra la venta",
+      description: "Explica qué sucede después de que el cliente realiza un pedido."
+    }
+  ];
+
+  const stepsToDisplay = workflowSteps || defaultSteps;
   return (
     <section id="#como-trabajamos" className="py-8 px-4 md:px-8 bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
       <div id={id} className="py-8">

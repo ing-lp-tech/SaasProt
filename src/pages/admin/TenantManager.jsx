@@ -14,8 +14,7 @@ const TenantManager = () => {
     const [newName, setNewName] = useState('');
     const [newSubdomain, setNewSubdomain] = useState('');
     const [newOwnerEmail, setNewOwnerEmail] = useState('');
-    const [primaryColor, setPrimaryColor] = useState('#3b82f6'); // Default blue
-    const [logoUrl, setLogoUrl] = useState('');
+    const [newPassword, setNewPassword] = useState(''); // Estado para password
 
     const [creating, setCreating] = useState(false);
     const [editingId, setEditingId] = useState(null); // ID if editing
@@ -60,8 +59,7 @@ const TenantManager = () => {
         setNewName('');
         setNewSubdomain('');
         setNewOwnerEmail('');
-        setPrimaryColor('#3b82f6');
-        setLogoUrl('');
+        setNewPassword('');
         setEditingId(null);
     };
 
@@ -70,8 +68,7 @@ const TenantManager = () => {
         setNewName(tenant.name);
         setNewSubdomain(tenant.subdomain);
         // Config defaults
-        setPrimaryColor(tenant.config?.primaryColor || '#3b82f6');
-        setLogoUrl(tenant.config?.logoUrl || '');
+        // Eliminated primaryColor and logoUrl from here
         // Owner email is harder to get from just tenant row unless we join, 
         // for now we might skip editing owner or imply it works different.
         // Let's keep it simple: Update details only.
@@ -79,13 +76,56 @@ const TenantManager = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('¿Estás seguro de eliminar esta empresa? Se perderán todos sus datos.')) return;
+        if (!confirm('¿Estás seguro de eliminar esta empresa? Se perderán todos sus datos y archivos asociados.')) return;
         try {
+            setMessage({ type: 'info', text: 'Eliminando archivos e imágenes...' });
+
+            // 1. Listar y eliminar archivos del Storage
+            // La estructura es: tenant-{id}/... en el bucket 'productos-imagenes'
+            const folderPath = `tenant-${id}`;
+            const { data: files, error: listError } = await supabase
+                .storage
+                .from('productos-imagenes')
+                .list(folderPath, {
+                    limit: 100,
+                    offset: 0,
+                    sortBy: { column: 'name', order: 'asc' },
+                    search: ''
+                });
+
+            if (files && files.length > 0) {
+                // Eliminar archivos encontrados
+                // Nota: list() retorna items directos, si hay subcarpetas (como site-config) hay que iterar recursivamente
+                // Para simplificar, intentamos borrar lo que encontremos en site-config también
+
+                // Estrategia: Listar recursivamente o carpetas conocidas
+                // Por ahora asumiendo estructura plana o carpeta 'site-config' conocida
+                const filesToDelete = files.map(f => `${folderPath}/${f.name}`);
+
+                // Check subfolder site-config
+                const { data: subFiles } = await supabase.storage.from('productos-imagenes').list(`${folderPath}/site-config`);
+                if (subFiles && subFiles.length > 0) {
+                    subFiles.forEach(f => filesToDelete.push(`${folderPath}/site-config/${f.name}`));
+                }
+
+                if (filesToDelete.length > 0) {
+                    const { error: deleteError } = await supabase
+                        .storage
+                        .from('productos-imagenes')
+                        .remove(filesToDelete);
+
+                    if (deleteError) console.error("Error eliminando archivos:", deleteError);
+                }
+            }
+
+            // 2. Eliminar registro del Tenant (Cascading delete se encargará del resto en DB)
             const { error } = await supabase.from('tenants').delete().eq('id', id);
             if (error) throw error;
-            setMessage({ type: 'success', text: 'Empresa eliminada.' });
+
+            setMessage({ type: 'success', text: 'Empresa y todos sus datos eliminados completamente.' });
             fetchTenants();
         } catch (error) {
+            console.error(error);
             setMessage({ type: 'error', text: 'Error al eliminar: ' + error.message });
         }
     };
@@ -158,10 +198,7 @@ const TenantManager = () => {
                     .update({
                         name: newName,
                         subdomain: newSubdomain,
-                        config: {
-                            primaryColor,
-                            logoUrl
-                        }
+                        // Config ya no se actualiza aquí, se usa SiteConfigEditor
                     })
                     .eq('id', editingId);
 
@@ -172,21 +209,48 @@ const TenantManager = () => {
 
             } else {
                 // CREATE MODE
+                // 1. Crear usuario en backend (si no existe)
+                // Usamos el endpoint del pdf-server para crear usuario con contraseña específica
+                let userId = null;
+                try {
+                    const response = await fetch('http://localhost:3001/create-tenant-user', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-tenant-id': 'admin' // Bypass check
+                        },
+                        body: JSON.stringify({
+                            email: newOwnerEmail,
+                            password: newPassword || 'tempPassword123!',
+                            fullName: 'Dueño ' + newName
+                        })
+                    });
+
+                    if (response.ok) {
+                        const resData = await response.json();
+                        userId = resData.user?.id;
+                    } else {
+                        console.warn('Backend creation failed, falling back to existing user check');
+                    }
+                } catch (e) {
+                    console.warn('Backend unreachable', e);
+                }
+
                 const { data, error } = await supabase.rpc('create_tenant_with_owner', {
                     tenant_name: newName,
                     tenant_subdomain: newSubdomain,
                     owner_email: newOwnerEmail,
-                    owner_password: 'tempPassword123!'
+                    owner_password: newPassword || 'tempPassword123!'
                 });
 
                 if (error) throw error;
 
-                // Update config explicitly after creation since RPC mainly handles structure
-                // Or we could update RPC, but client side update is easier for now:
-                // Wait for RPC to return ID (it returns jsonb)
+                // Update config explicitly with password for visibility (solo password)
                 if (data && data.tenant_id) {
                     await supabase.from('tenants').update({
-                        config: { primaryColor, logoUrl }
+                        config: {
+                            owner_password: newPassword || 'tempPassword123!'
+                        }
                     }).eq('id', data.tenant_id);
                 }
 
@@ -297,53 +361,34 @@ const TenantManager = () => {
                             </div>
 
                             {!editingId && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Email del Dueño (Master)</label>
-                                    <input
-                                        type="email"
-                                        required={!editingId}
-                                        value={newOwnerEmail}
-                                        onChange={e => setNewOwnerEmail(e.target.value)}
-                                        className="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 outline-none"
-                                        placeholder="usuario@ejemplo.com"
-                                    />
-                                    <p className="text-xs text-yellow-500 mt-1">⚠️ El usuario debe haberse registrado previamente.</p>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">Email del Dueño (Master)</label>
+                                        <input
+                                            type="email"
+                                            required={!editingId}
+                                            value={newOwnerEmail}
+                                            onChange={e => setNewOwnerEmail(e.target.value)}
+                                            className="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 outline-none"
+                                            placeholder="usuario@ejemplo.com"
+                                        />
+                                        <p className="text-xs text-yellow-500 mt-1">⚠️ El usuario será creado si no existe.</p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">Contraseña Inicial</label>
+                                        <input
+                                            type="text"
+                                            value={newPassword}
+                                            onChange={e => setNewPassword(e.target.value)}
+                                            className="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 outline-none"
+                                            placeholder="Ej: ClaveSegura123"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Se guardará para que puedas verla.</p>
+                                    </div>
                                 </div>
                             )}
 
-                            {/* Branding Config */}
-                            <div className="pt-4 border-t border-gray-700">
-                                <h3 className="text-sm font-semibold text-gray-300 mb-2">Personalización</h3>
 
-                                <div className="mb-3">
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">Color Principal</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="color"
-                                            value={primaryColor}
-                                            onChange={e => setPrimaryColor(e.target.value)}
-                                            className="h-8 w-12 rounded cursor-pointer border-0 bg-transparent p-0"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={primaryColor}
-                                            onChange={e => setPrimaryColor(e.target.value)}
-                                            className="flex-1 bg-gray-900 border border-gray-600 rounded p-1 text-sm text-white"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">URL del Logo</label>
-                                    <input
-                                        type="text"
-                                        value={logoUrl}
-                                        onChange={e => setLogoUrl(e.target.value)}
-                                        className="w-full bg-gray-900 border border-gray-600 rounded p-2 text-sm text-white"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                            </div>
 
                             <button
                                 type="submit"
@@ -384,6 +429,11 @@ const TenantManager = () => {
                                             <div className="text-sm text-gray-400 mt-1 space-y-1">
                                                 <p>Subdominio: <span className="text-gray-300 font-mono bg-gray-900 px-2 py-0.5 rounded">{tenant.subdomain}</span></p>
                                                 <p className="text-xs text-gray-500">ID: {tenant.id}</p>
+                                                {tenant.config?.owner_password && (
+                                                    <p className="text-xs text-green-400 mt-1">
+                                                        🔑 Pass: <span className="font-mono bg-green-900/20 px-1 rounded">{tenant.config.owner_password}</span>
+                                                    </p>
+                                                )}
                                             </div>
 
                                             {/* PLAN INFO */}
@@ -547,6 +597,13 @@ const TenantManager = () => {
                                 <p className="text-sm text-gray-500 mb-1">Fecha de Creación</p>
                                 <p className="text-white">{new Date(selectedTenant.created_at).toLocaleString()}</p>
                             </div>
+
+                            {selectedTenant.config?.owner_password && (
+                                <div className="bg-gray-900 p-4 rounded-lg border border-gray-700 border-green-900/40">
+                                    <p className="text-sm text-gray-500 mb-1">Contraseña (Solo Visible Admins)</p>
+                                    <p className="text-green-400 font-mono text-lg">{selectedTenant.config.owner_password}</p>
+                                </div>
+                            )}
 
                             {selectedTenant.plan_status === 'trial' && (
                                 <div className="bg-gray-900 p-4 rounded-lg border border-gray-700">

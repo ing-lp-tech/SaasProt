@@ -61,6 +61,35 @@ const tenantMiddleware = async (req, res, next) => {
 
 app.use(tenantMiddleware);
 
+// Endpoint para crear usuarios (Tenant Owners) desde Admin
+app.post('/create-tenant-user', async (req, res) => {
+    try {
+        const { email, password, fullName } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required' });
+        }
+
+        console.log('Creating user:', email);
+
+        // 1. Crear usuario en Auth (usando admin API si tenemos key privilegiada)
+        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
+            email: email,
+            password: password,
+            email_confirm: true,
+            user_metadata: { full_name: fullName }
+        });
+
+        if (userError) throw userError;
+
+        res.json({ success: true, user: userData.user });
+
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Endpoint para subir PDF
 app.post('/upload-pdf', upload.single('file'), async (req, res) => {
     try {

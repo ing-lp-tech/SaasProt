@@ -7,11 +7,9 @@ export const THEMES = [
         font: 'Poppins',
         defaultFaqs: [
             {
-                category: "Compras y Pedidos",
+                category: "General",
                 questions: [
-                    { question: "¿Cómo puedo realizar un pedido?", answer: "Navega por nuestro catálogo, agrega productos al carrito y coordina el pago con nosotros." },
-                    { question: "¿Cuáles son los métodos de pago?", answer: "Aceptamos transferencias bancarias, efectivo y pagos digitales. Consulta con nuestro equipo." },
-                    { question: "¿Cuánto tarda el envío?", answer: "Los envíos se realizan en 3-5 días hábiles según tu ubicación." }
+                    { question: "¿Cómo edito estas preguntas?", answer: "Ve al panel de administración > Gestionar Contenido > Preguntas Frecuentes para agregar tus propias respuestas." }
                 ]
             }
         ]

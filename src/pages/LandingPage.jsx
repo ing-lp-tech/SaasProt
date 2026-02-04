@@ -35,7 +35,7 @@ export default function LandingPage() {
                         <a href="#planes" className="hover:text-blue-600 transition">Planes</a>
                         <a href="#about-me" className="hover:text-blue-600 transition">Nosotros</a>
                         <button
-                            onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+                            onClick={() => document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' })}
                             className="hover:text-blue-600 transition"
                         >
                             Contacto
@@ -413,10 +413,7 @@ export default function LandingPage() {
                 </div>
             </div>
 
-            {/* Footer with Contact Info */}
-            <div id="contact">
-                <Footer id="contact" />
-            </div>
+            {/* Footer handled globally in AppContent */}
             {/* Modal de Solicitud */}
             <RequestStoreModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>

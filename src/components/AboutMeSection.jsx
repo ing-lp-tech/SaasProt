@@ -68,48 +68,12 @@ const AboutMeSection = () => {
             // Fallback si no hay contenido configurado
             <div className="space-y-12">
               <div className="space-y-4">
-                <h3 className="text-2xl font-semibold">Ingeniero Electrónico</h3>
+                <h3 className="text-2xl font-semibold">Sobre Nosotros</h3>
                 <p className="text-lg">
-                  Soy ingeniero electrónico graduado en la UNLaM, con una base
-                  académica sólida que me permitió unir la teoría con la práctica.
-                  Desde el inicio de mi carrera descubrí que mi verdadera pasión es
-                  aplicar el conocimiento técnico a proyectos que generen impacto
-                  real.
+                  Cuéntale a tus clientes quién eres y qué haces. Este espacio es ideal para compartir tu historia, valores y experiencia.
                 </p>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-semibold">
-                  Experiencia en máquinas y procesos
-                </h3>
                 <p className="text-lg">
-                  A lo largo de mi recorrido profesional adquirí experiencia
-                  trabajando con diferentes tipos de máquinas, lo que me permitió
-                  entender a fondo los procesos productivos y las necesidades del
-                  sector industrial y textil.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-semibold">Fabricando con pasión</h3>
-                <p className="text-lg">
-                  También tengo experiencia en la fabricación de ropa, donde pude
-                  aplicar la disciplina técnica de la ingeniería para optimizar la
-                  producción, innovar en los procesos y garantizar la calidad en
-                  cada detalle.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-semibold">
-                  Conectando tecnología y oportunidades
-                </h3>
-                <p className="text-lg">
-                  Hoy aplico mis conocimientos de ingeniería y mi experiencia en el
-                  rubro para importar productos como plotters y otros equipos desde
-                  China, acercando tecnología accesible y confiable a quienes lo
-                  necesitan. Mi visión es clara: unir conocimiento, experiencia y
-                  herramientas para ofrecer soluciones prácticas y reales.
+                  Ve al panel de administración para editar este texto, cambiar la imagen de fondo y personalizar completamente esta sección.
                 </p>
               </div>
             </div>

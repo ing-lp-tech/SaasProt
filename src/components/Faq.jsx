@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-import { faqData } from "../constants";
+
 import { siteConfigService } from "../services/siteConfigService";
 import { useTenant } from "../contexts/TenantContext";
 import { THEMES } from "../constants/themes";
@@ -41,13 +41,23 @@ export default function FAQ({ items }) {
       }
     };
 
-    if (tenant) {
-      fetchFaqContent();
-    }
+    fetchFaqContent();
   }, [tenant]);
 
-  // Use provided items or fallback to dynamic FAQs or default imported data
-  const dataToDisplay = items || dynamicFaqs || faqData;
+  const defaultFaqs = [
+    {
+      category: "General",
+      questions: [
+        {
+          question: "¿Cómo edito estas preguntas?",
+          answer: "Ve al panel de administración > Gestionar Contenido > Preguntas Frecuentes para agregar tus propias respuestas."
+        }
+      ]
+    }
+  ];
+
+  // Use provided items or fallback to dynamic FAQs or default generic data
+  const dataToDisplay = items || dynamicFaqs || defaultFaqs;
 
   const toggle = (i) => {
     setOpenIndex(i === openIndex ? null : i);

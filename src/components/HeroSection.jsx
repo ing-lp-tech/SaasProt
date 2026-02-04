@@ -26,9 +26,9 @@ const HeroSection = ({ id, dolarOficial }) => {
   const [heroCarouselImages, setHeroCarouselImages] = useState([]);
 
   // Estados para contenido de texto dinámico
-  const [heroTitle, setHeroTitle] = useState("Soluciones profesionales para patronaje digital");
+  const [heroTitle, setHeroTitle] = useState("Bienvenido a tu nueva tienda");
   const [heroSubtitle, setHeroSubtitle] = useState(null);
-  const [heroDescription, setHeroDescription] = useState("Equipos y materiales de alta precisión para diseñadores y fabricantes de moda. Maximiza la eficiencia en tu producción con nuestros plotters industriales y papel técnico especializado para tizado.");
+  const [heroDescription, setHeroDescription] = useState("Este es un texto de ejemplo. Ingresa al panel de administración para personalizar el título, la descripción y las imágenes de portada de tu sitio web.");
 
   useEffect(() => {
     const fetchHeroContent = async () => {

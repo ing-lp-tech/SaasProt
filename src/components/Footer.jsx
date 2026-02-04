@@ -136,14 +136,14 @@ const Footer = ({ id }) => {
       } else {
         setSocialLinks([
           {
-            name: "TikTok",
-            icon: <img src={tiktok} alt="TikTok" className="w-6 h-6" loading="lazy" />,
-            url: "https://www.tiktok.com/@ingeniero_emprendedor",
-          },
-          {
             name: "Facebook",
             icon: <Facebook className="w-6 h-6" />,
-            url: "https://www.tiktok.com/@ingeniero_emprendedor",
+            url: "#",
+          },
+          {
+            name: "Instagram",
+            icon: <Instagram className="w-6 h-6" />,
+            url: "#",
           },
         ]);
       }

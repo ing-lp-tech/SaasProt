@@ -18,7 +18,7 @@ import FAQ from "./components/Faq";
 import SEO from "./components/SEO"; // Import SEO component
 import ManualUploader from "./components/ManualUploader";
 import ChatAudaces from "./components/ChatAudaces";
-import ChatAudacesWidget from "./components/ChatAudacesWidget"; // Chat para admin
+
 import ChatVendedor from "./components/ChatVendedor"; // Chat para ventas (público)
 import "./components/ChatAudaces.css";
 import Login from "./pages/Login";
@@ -207,14 +207,10 @@ const AppContent = ({ cart, addToCart, removeFromCart }) => {
 
       {location.pathname !== '/login' && <Footer id="contacto" />}
 
-      {/* Renderizar chatbot según la ruta, ocultar en login */}
-      {location.pathname !== '/login' && (
-        isAdminRoute ? (
-          <ChatAudacesWidget />
-        ) : (
-          /* Si hay tenant, validar bot_enabled. Si no (landing principal), mostrar por defecto. */
-          (!tenant || tenant.bot_enabled) && <ChatVendedor />
-        )
+      {/* Renderizar chatbot de ventas SOLO en parte pública, ocultar en login y admin */}
+      {location.pathname !== '/login' && !isAdminRoute && (
+        /* Si hay tenant, validar bot_enabled. Si no (landing principal), mostrar por defecto. */
+        (!tenant || tenant.bot_enabled) && <ChatVendedor />
       )}
     </>
   );

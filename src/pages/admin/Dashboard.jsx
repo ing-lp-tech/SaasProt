@@ -46,11 +46,7 @@ export default function Dashboard() {
                             <p>Crear y organizar categorías de productos</p>
                         </div>
 
-                        <div className="dashboard-card" onClick={() => navigate('/admin/upload-pdf')}>
-                            <FileText size={32} />
-                            <h2>Subir Manuales PDF</h2>
-                            <p>Cargar manuales de Audaces al sistema</p>
-                        </div>
+
 
                         <div className="dashboard-card" onClick={() => navigate('/admin/site-config')}>
                             <Folder size={32} />
