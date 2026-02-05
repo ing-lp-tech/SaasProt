@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { X, Loader, CheckCircle, Store } from 'lucide-react';
 
@@ -12,6 +12,17 @@ export default function RequestStoreModal({ isOpen, onClose }) {
         mensaje: '',
         social_link: ''
     });
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -60,7 +71,7 @@ export default function RequestStoreModal({ isOpen, onClose }) {
             ></div>
 
             {/* Modal */}
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all scale-100">
 
                 {/* Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-blue-600 p-6 text-white text-center">

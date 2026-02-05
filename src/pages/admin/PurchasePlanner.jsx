@@ -38,17 +38,28 @@ const PurchasePlanner = () => {
     const [editingId, setEditingId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Cargar datos
+    const [dolarRates, setDolarRates] = useState({ blue: 0, oficial: 0 });
+
+    // Cargar datos y cotizaciones
     useEffect(() => {
         if (tenant) fetchItems();
+        fetchAllDolarRates();
     }, [tenant]);
 
-    // Fetch cotización del dólar cuando cambia el tipo
+    // Bloquear scroll cuando el modal está abierto
     useEffect(() => {
-        if (formData.tipo_dolar) {
-            fetchDolarRate(formData.tipo_dolar);
+        if (isModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
         }
-    }, [formData.tipo_dolar]);
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isModalOpen]);
+
+    // Fetch cotización del dólar cuando cambia el tipo
+    // REMOVED: This useEffect is replaced by handleDolarTypeChange and fetchAllDolarRates
 
     const fetchItems = async () => {
         try {
@@ -68,23 +79,44 @@ const PurchasePlanner = () => {
         }
     };
 
-    const fetchDolarRate = async (tipo) => {
+    const fetchAllDolarRates = async () => {
         try {
             setFetchingDolar(true);
-            const url = `https://dolarapi.com/v1/dolares/${tipo}`;
-            const response = await fetch(url);
-            const data = await response.json();
+            const [blueRes, oficialRes] = await Promise.all([
+                fetch('https://dolarapi.com/v1/dolares/blue'),
+                fetch('https://dolarapi.com/v1/dolares/oficial')
+            ]);
 
-            setFormData(prev => ({
-                ...prev,
-                cotizacion_dolar: data.venta || data.promedio || 0
-            }));
+            const blueData = await blueRes.json();
+            const oficialData = await oficialRes.json();
+
+            const rates = {
+                blue: blueData.venta || blueData.promedio || 0,
+                oficial: oficialData.venta || oficialData.promedio || 0
+            };
+
+            setDolarRates(rates);
+
+            // Si es un nuevo item (no edición), setear cotización inicial
+            if (!editingId) {
+                setFormData(prev => ({
+                    ...prev,
+                    cotizacion_dolar: rates[prev.tipo_dolar]
+                }));
+            }
         } catch (error) {
-            console.error('Error fetching dolar rate:', error);
-            setFormData(prev => ({ ...prev, cotizacion_dolar: 0 }));
+            console.error('Error fetching dolar rates:', error);
         } finally {
             setFetchingDolar(false);
         }
+    };
+
+    const handleDolarTypeChange = (type) => {
+        setFormData(prev => ({
+            ...prev,
+            tipo_dolar: type,
+            cotizacion_dolar: dolarRates[type] || prev.cotizacion_dolar
+        }));
     };
 
     // --- LÓGICA DE CÁLCULADORA ---
@@ -261,7 +293,7 @@ const PurchasePlanner = () => {
             costo_total: 0,
             gastos_importacion: 0,
             tipo_dolar: 'blue',
-            cotizacion_dolar: 0,
+            cotizacion_dolar: dolarRates.blue || 0, // Reset to cached rate
             imagen: null,
             imagen_preview: null
         });
@@ -292,23 +324,7 @@ const PurchasePlanner = () => {
     };
 
     const handleNew = () => {
-        setFormData({
-            nombre: '',
-            marca: '',
-            codigo: '',
-            fecha_compra: new Date().toISOString().split('T')[0],
-            tipo_unidad: 'DOCENA',
-            cantidad_por_paquete: 12,
-            cantidad_paquetes: 1,
-            costo_por_paquete: 0,
-            costo_total: 0,
-            gastos_importacion: 0,
-            tipo_dolar: 'blue',
-            cotizacion_dolar: 0,
-            imagen: null,
-            imagen_preview: null
-        });
-        setEditingId(null);
+        resetForm(); // Uses resetForm to get clean state with latest dollar
         setIsModalOpen(true);
     };
 
@@ -394,7 +410,7 @@ const PurchasePlanner = () => {
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
 
                                         {/* Botones de Acción Flotantes */}
-                                        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
+                                        <div className="absolute top-3 right-3 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity translate-y-0 md:translate-y-2 md:group-hover:translate-y-0 duration-300">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleEdit(item); }}
                                                 className="p-2 bg-white text-blue-600 rounded-lg shadow-sm hover:shadow-md hover:bg-blue-50 transition-all"
@@ -500,7 +516,7 @@ const PurchasePlanner = () => {
                     onClick={() => setIsModalOpen(false)}
                 >
                     <div
-                        className="bg-white w-full max-w-7xl h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300"
+                        className="bg-white w-full max-w-7xl h-[90vh] rounded-2xl shadow-2xl overflow-y-auto md:overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* BOTÓN CERRAR - FLOTANTE */}
@@ -512,7 +528,7 @@ const PurchasePlanner = () => {
                         </button>
 
                         {/* COLUMNA IZQUIERDA: IMAGEN GRANDE */}
-                        <div className="md:w-1/2 bg-gray-100 flex items-center justify-center relative p-8">
+                        <div className="md:w-1/2 bg-gray-100 flex items-center justify-center relative p-4 md:p-8 min-h-[300px]">
                             <div className="w-full h-full flex items-center justify-center">
                                 {formData.imagen_preview ? (
                                     <img
@@ -537,7 +553,7 @@ const PurchasePlanner = () => {
                         </div>
 
                         {/* COLUMNA DERECHA: FORMULARIO WIDE */}
-                        <div className="md:w-1/2 overflow-y-auto bg-white p-8 md:p-10">
+                        <div className="md:w-1/2 md:overflow-y-auto bg-white p-6 md:p-10">
                             <div className="max-w-2xl mx-auto space-y-8">
                                 <div>
                                     <h2 className="text-3xl font-bold text-gray-800 mb-2">Detalles del Producto</h2>
@@ -652,27 +668,43 @@ const PurchasePlanner = () => {
                                         <h3 className="font-bold text-gray-700 mb-4 uppercase tracking-wide text-sm">Conversión a Pesos</h3>
                                         <div className="flex gap-4 mb-4">
                                             {['blue', 'oficial'].map(tipo => (
-                                                <button key={tipo} type="button" onClick={() => setFormData({ ...formData, tipo_dolar: tipo })} className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${formData.tipo_dolar === tipo ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200'}`}>
-                                                    Dólar {tipo.charAt(0).toUpperCase() + tipo.slice(1)} (${formData.cotizacion_dolar.toLocaleString('es-AR')})
+                                                <button
+                                                    key={tipo}
+                                                    type="button"
+                                                    onClick={() => handleDolarTypeChange(tipo)}
+                                                    className={`flex-1 py-2 px-2 md:px-4 rounded-lg font-medium transition-all text-xs md:text-sm ${formData.tipo_dolar === tipo ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200'}`}
+                                                >
+                                                    <div>Dólar {tipo.charAt(0).toUpperCase() + tipo.slice(1)}</div>
+                                                    <div className="font-bold opacity-80">
+                                                        (${dolarRates[tipo]?.toLocaleString('es-AR')})
+                                                    </div>
                                                 </button>
                                             ))}
                                         </div>
 
                                         <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-2xl shadow-xl text-white">
-                                            <div className="text-white/80 text-sm uppercase font-bold mb-2">Precio Final (ARS)</div>
-                                            <div className="flex justify-between items-end">
-                                                <div>
-                                                    <div className="text-4xl font-bold">
-                                                        ${getPriceInARS() > 0 ? parseFloat(getPriceInARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 }) : '0.00'}
-                                                    </div>
-                                                    <div className="text-white/60 text-sm mt-1">por Unidad</div>
-                                                </div>
-                                                {formData.tipo_unidad !== 'UNIDAD' && parseFloat(getCostPerPackARS()) > 0 && (
+                                            <div className="text-white/80 text-sm uppercase font-bold mb-3 border-b border-white/20 pb-2">Precio Final Total (ARS)</div>
+
+                                            <div className="flex flex-col gap-4">
+                                                {/* PRECIO POR UNIDAD */}
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-white/80 text-sm">x Unidad</span>
                                                     <div className="text-right">
-                                                        <div className="text-2xl font-bold opacity-90">
-                                                            ${parseFloat(getCostPerPackARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                                        <div className="text-3xl md:text-4xl font-bold tracking-tight">
+                                                            ${getPriceInARS() > 0 ? parseFloat(getPriceInARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 }) : '0.00'}
                                                         </div>
-                                                        <div className="text-white/60 text-sm mt-1">por {formData.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack'}</div>
+                                                    </div>
+                                                </div>
+
+                                                {/* PRECIO POR PACK/DOCENA (Si aplica) */}
+                                                {formData.tipo_unidad !== 'UNIDAD' && parseFloat(getCostPerPackARS()) > 0 && (
+                                                    <div className="flex justify-between items-center pt-3 border-t border-white/10">
+                                                        <span className="text-white/80 text-sm">x {formData.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack'}</span>
+                                                        <div className="text-right">
+                                                            <div className="text-xl md:text-2xl font-bold text-white/90">
+                                                                ${parseFloat(getCostPerPackARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
