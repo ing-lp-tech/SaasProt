@@ -10,7 +10,6 @@ import {
 import { Link } from 'react-router-dom';
 
 const PurchasePlanner = () => {
-    const { user } = useAuth();
     const { tenant } = useTenant();
     const [loading, setLoading] = useState(true);
     const [items, setItems] = useState([]);
@@ -37,6 +36,7 @@ const PurchasePlanner = () => {
 
     // Estado para edición
     const [editingId, setEditingId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Cargar datos
     useEffect(() => {
@@ -175,6 +175,8 @@ const PurchasePlanner = () => {
         setUploading(true);
 
         try {
+            if (!tenant) throw new Error("No se ha identificado el cliente (tenant).");
+
             let infoToSave = {
                 tenant_id: tenant.id,
                 nombre: formData.nombre,
@@ -198,7 +200,6 @@ const PurchasePlanner = () => {
                 // Comprimir
                 let fileToUpload = formData.imagen;
                 try {
-                    // eslint-disable-next-line no-undef
                     fileToUpload = await compressImage(formData.imagen);
                 } catch (err) {
                     console.warn("Compression failed, uploading original");
@@ -265,6 +266,7 @@ const PurchasePlanner = () => {
             imagen_preview: null
         });
         setEditingId(null);
+        setIsModalOpen(false);
     };
 
     const handleEdit = (item) => {
@@ -286,8 +288,28 @@ const PurchasePlanner = () => {
             imagen: null,
             imagen_preview: item.imagen_url
         });
-        // Scroll top
-        window.scrollTo(0, 0);
+        setIsModalOpen(true);
+    };
+
+    const handleNew = () => {
+        setFormData({
+            nombre: '',
+            marca: '',
+            codigo: '',
+            fecha_compra: new Date().toISOString().split('T')[0],
+            tipo_unidad: 'DOCENA',
+            cantidad_por_paquete: 12,
+            cantidad_paquetes: 1,
+            costo_por_paquete: 0,
+            costo_total: 0,
+            gastos_importacion: 0,
+            tipo_dolar: 'blue',
+            cotizacion_dolar: 0,
+            imagen: null,
+            imagen_preview: null
+        });
+        setEditingId(null);
+        setIsModalOpen(true);
     };
 
     const handleDelete = async (id) => {
@@ -308,399 +330,374 @@ const PurchasePlanner = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex items-center gap-4 mb-8">
-                    <Link to="/admin/dashboard" className="p-2 bg-white rounded-full shadow hover:bg-gray-100">
-                        <ArrowLeft size={20} className="text-gray-600" />
-                    </Link>
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-                            <Calculator className="text-blue-600" /> Planificador de Compras
-                        </h1>
-                        <p className="text-gray-500">Calcula costos, compara y guarda tus posibles compras</p>
+            <div className="w-full mx-auto">
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                        <Link to="/admin/dashboard" className="p-2 bg-white rounded-full shadow hover:bg-gray-100">
+                            <ArrowLeft size={20} className="text-gray-600" />
+                        </Link>
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+                                <Calculator className="text-blue-600" /> Planificador de Compras
+                            </h1>
+                            <p className="text-gray-500 hidden md:block">Calcula costos, compara y guarda tus posibles compras</p>
+                        </div>
                     </div>
+                    <button
+                        onClick={handleNew}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all flex items-center gap-2 transform active:scale-95"
+                    >
+                        <Calculator size={20} />
+                        NUEVA POSIBLE COMPRA
+                    </button>
                 </div>
 
-                <div className="grid lg:grid-cols-5 gap-8">
-                    {/* PANEL IZQUIERDO: CALCULADORA Y FORMULARIO */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden sticky top-6">
-                            <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
-                                <span className="font-semibold flex items-center gap-2">
-                                    {editingId ? <Edit2 size={18} /> : <Calculator size={18} />}
-                                    {editingId ? 'Editar Cálculo' : 'Nuevo Cálculo'}
-                                </span>
-                                {editingId && (
-                                    <button onClick={resetForm} className="text-xs bg-blue-700 px-2 py-1 rounded hover:bg-blue-500">
-                                        Cancelar
-                                    </button>
+                <div className="w-full">
+                    <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <FileText className="text-gray-400" />
+                        Historial de Cálculos
+                    </h2>
+
+                    {loading ? (
+                        <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+                            <Loader2 className="animate-spin relative left-1/2 -ml-3 text-blue-500" size={30} />
+                            <p className="text-gray-400 mt-2">Cargando...</p>
+                        </div>
+                    ) : items.length === 0 ? (
+                        <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-dashed border-gray-300">
+                            <Calculator className="mx-auto text-gray-300 mb-4" size={48} />
+                            <h3 className="text-lg font-medium text-gray-600">Sin registros aún</h3>
+                            <p className="text-gray-400">Usa la calculadora izquierda para agregar tu primer producto.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
+                            {items.map(item => (
+                                <div
+                                    key={item.id}
+                                    onClick={() => handleEdit(item)}
+                                    className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col overflow-hidden"
+                                >
+                                    {/* IMAGEN SUPERIOR */}
+                                    <div className="h-48 w-full bg-gray-100 relative overflow-hidden">
+                                        {item.imagen_url ? (
+                                            <img
+                                                src={item.imagen_url}
+                                                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                                alt={item.nombre}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
+                                                <ImageIcon size={48} className="opacity-50" />
+                                            </div>
+                                        )}
+                                        {/* Overlay Hover */}
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+
+                                        {/* Botones de Acción Flotantes */}
+                                        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleEdit(item); }}
+                                                className="p-2 bg-white text-blue-600 rounded-lg shadow-sm hover:shadow-md hover:bg-blue-50 transition-all"
+                                                title="Editar"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
+                                                className="p-2 bg-white text-red-500 rounded-lg shadow-sm hover:shadow-md hover:bg-red-50 transition-all"
+                                                title="Eliminar"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+
+                                        {/* Price Tag Overlay */}
+                                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-lg text-sm font-bold text-gray-800 shadow-sm">
+                                            ${item.costo_total} <span className="text-[10px] text-gray-500 font-normal">Total</span>
+                                        </div>
+                                    </div>
+
+                                    {/* CONTENIDO */}
+                                    <div className="p-4 flex-1 flex flex-col gap-3">
+                                        <div>
+                                            <div className="flex justify-between items-start">
+                                                <h3 className="font-bold text-gray-800 line-clamp-1 text-lg mb-1">{item.nombre}</h3>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2 text-xs">
+                                                {item.marca && <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 font-medium">{item.marca}</span>}
+                                                {item.codigo && <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">#{item.codigo}</span>}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 mt-auto">
+                                            {/* SECCIÓN USD */}
+                                            <div className="bg-blue-50/80 p-2 rounded-lg border border-blue-100">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="text-[10px] font-bold text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded">USD</span>
+                                                    <span className="text-[10px] text-blue-600 font-medium">Costo Importación</span>
+                                                </div>
+                                                <div className="flex justify-between items-end">
+                                                    <div className="text-xs text-blue-700/80">
+                                                        {item.cantidad_paquetes} x {item.cantidad_por_paquete} u.
+                                                    </div>
+                                                    <div className="text-right leading-tight">
+                                                        {item.tipo_unidad !== 'UNIDAD' ? (
+                                                            <>
+                                                                <div className="font-bold text-blue-800 text-sm">
+                                                                    ${(parseFloat(item.costo_unitario_final) * item.cantidad_por_paquete).toFixed(2)}
+                                                                </div>
+                                                                <div className="text-[10px] text-blue-600">
+                                                                    Unit: ${item.costo_unitario_final}
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <div className="font-bold text-blue-800 text-sm">
+                                                                ${item.costo_unitario_final}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* SECCIÓN ARS */}
+                                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-2 rounded-lg border border-purple-100">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="text-[10px] font-bold text-purple-800 bg-purple-100 px-1.5 py-0.5 rounded">ARS</span>
+                                                    <span className="text-[10px] text-purple-600 font-medium">Precio Final</span>
+                                                </div>
+                                                <div className="text-right leading-tight">
+                                                    {item.tipo_unidad !== 'UNIDAD' ? (
+                                                        <>
+                                                            <div className="font-bold text-purple-900 text-lg">
+                                                                ${item.precio_final_ars
+                                                                    ? (parseFloat(item.precio_final_ars) * item.cantidad_por_paquete).toLocaleString('es-AR')
+                                                                    : '-'}
+                                                            </div>
+                                                            <div className="text-[10px] text-purple-700">
+                                                                Unit: ${item.precio_final_ars ? parseFloat(item.precio_final_ars).toLocaleString('es-AR') : '-'}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="font-bold text-purple-900 text-lg">
+                                                            ${item.precio_final_ars ? parseFloat(item.precio_final_ars).toLocaleString('es-AR') : '-'}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* MODAL DE EDICIÓN / DETALLE */}
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                    onClick={() => setIsModalOpen(false)}
+                >
+                    <div
+                        className="bg-white w-full max-w-7xl h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {/* BOTÓN CERRAR - FLOTANTE */}
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-4 right-4 z-20 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all text-gray-800 backdrop-blur-md"
+                        >
+                            <ArrowLeft size={24} />
+                        </button>
+
+                        {/* COLUMNA IZQUIERDA: IMAGEN GRANDE */}
+                        <div className="md:w-1/2 bg-gray-100 flex items-center justify-center relative p-8">
+                            <div className="w-full h-full flex items-center justify-center">
+                                {formData.imagen_preview ? (
+                                    <img
+                                        src={formData.imagen_preview}
+                                        alt="Preview"
+                                        className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
+                                    />
+                                ) : (
+                                    <div className="text-center text-gray-400">
+                                        <ImageIcon className="mx-auto mb-4 opacity-50" size={120} />
+                                        <p className="text-xl font-medium">Sin Imagen</p>
+                                    </div>
                                 )}
                             </div>
 
-                            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                                {/* IMAGEN */}
-                                <div className="flex justify-center">
-                                    <label className="cursor-pointer relative group">
-                                        <div className={`w-32 h-32 rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden transition-colors ${formData.imagen_preview ? 'border-blue-500' : 'border-gray-300 hover:border-blue-400'}`}>
-                                            {formData.imagen_preview ? (
-                                                <img src={formData.imagen_preview} alt="Preview" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="text-center text-gray-400">
-                                                    <ImageIcon className="mx-auto mb-1" />
-                                                    <span className="text-xs">Foto</span>
+                            {/* CAMBIAR FOTO FLOTANTE */}
+                            <label className="absolute bottom-8 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg cursor-pointer flex items-center gap-2 transition-transform transform active:scale-95">
+                                <Upload size={20} />
+                                <span className="font-bold">Cambiar Foto</span>
+                                <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" />
+                            </label>
+                        </div>
+
+                        {/* COLUMNA DERECHA: FORMULARIO WIDE */}
+                        <div className="md:w-1/2 overflow-y-auto bg-white p-8 md:p-10">
+                            <div className="max-w-2xl mx-auto space-y-8">
+                                <div>
+                                    <h2 className="text-3xl font-bold text-gray-800 mb-2">Detalles del Producto</h2>
+                                    <p className="text-gray-500">Edita la información y recalcula costos fácilmente.</p>
+                                </div>
+
+                                <form onSubmit={handleSubmit} className="space-y-8">
+                                    {/* DATOS PRINCIPALES */}
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Nombre del Producto</label>
+                                            <input
+                                                type="text"
+                                                className="w-full text-lg p-4 bg-gray-50 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none"
+                                                required
+                                                value={formData.nombre}
+                                                onChange={e => setFormData({ ...formData, nombre: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Marca</label>
+                                            <input type="text" className="w-full p-4 bg-gray-50 rounded-xl border outline-none" value={formData.marca} onChange={e => setFormData({ ...formData, marca: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Código</label>
+                                            <input type="text" className="w-full p-4 bg-gray-50 rounded-xl border outline-none" value={formData.codigo} onChange={e => setFormData({ ...formData, codigo: e.target.value })} />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">Fecha de Compra</label>
+                                            <input type="date" className="w-full p-4 bg-gray-50 rounded-xl border outline-none" value={formData.fecha_compra} onChange={e => setFormData({ ...formData, fecha_compra: e.target.value })} />
+                                        </div>
+                                    </div>
+
+                                    <hr className="border-gray-100" />
+
+                                    {/* CALCULADORA (REDISEÑADA PARA MODAL) */}
+                                    <div>
+                                        <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                                            <Calculator size={24} /> Costos y Precios
+                                        </h3>
+
+                                        <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 space-y-6">
+                                            {/* SELECTOR */}
+                                            <div className="flex gap-4">
+                                                {['UNIDAD', 'DOCENA', 'PACK'].map(type => (
+                                                    <button
+                                                        key={type}
+                                                        type="button"
+                                                        onClick={() => handleCalcChange('tipo_unidad', type)}
+                                                        className={`flex-1 py-3 rounded-xl font-bold transition-all border-2 ${formData.tipo_unidad === type ? 'bg-blue-600 text-white border-blue-600 shadow-lg' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300'}`}
+                                                    >
+                                                        {type}
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            {/* INPUTS GRID */}
+                                            <div className="grid grid-cols-2 gap-6">
+                                                {formData.tipo_unidad === 'PACK' && (
+                                                    <div className="col-span-2">
+                                                        <label className="text-sm font-medium text-gray-500 mb-1 block">Unidades por Pack</label>
+                                                        <input type="number" className="w-full p-3 border rounded-xl text-center font-bold text-blue-800 text-lg" value={formData.cantidad_por_paquete} onChange={e => handleCalcChange('cantidad_por_paquete', e.target.value)} />
+                                                    </div>
+                                                )}
+
+                                                <div>
+                                                    <label className="text-sm text-gray-500 mb-1 block">Cantidad ({formData.tipo_unidad})</label>
+                                                    <input type="number" className="w-full p-3 border rounded-xl font-bold text-lg" value={formData.cantidad_paquetes} onChange={e => handleCalcChange('cantidad_paquetes', e.target.value)} />
                                                 </div>
-                                            )}
-                                        </div>
-                                        <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" />
-                                        <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Upload className="text-white" size={24} />
-                                        </div>
-                                    </label>
-                                </div>
-
-                                {/* DATOS BASICOS */}
-                                <div className="space-y-4">
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre del Producto..."
-                                        className="w-full p-3 bg-gray-50 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
-                                        required
-                                        value={formData.nombre}
-                                        onChange={e => setFormData({ ...formData, nombre: e.target.value })}
-                                    />
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <input
-                                            type="text"
-                                            placeholder="Marca"
-                                            className="p-2 bg-gray-50 rounded-lg border outline-none text-sm"
-                                            value={formData.marca}
-                                            onChange={e => setFormData({ ...formData, marca: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Código"
-                                            className="p-2 bg-gray-50 rounded-lg border outline-none text-sm"
-                                            value={formData.codigo}
-                                            onChange={e => setFormData({ ...formData, codigo: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-2 border p-2 rounded-lg bg-gray-50">
-                                        <Calendar size={16} className="text-gray-400" />
-                                        <input
-                                            type="date"
-                                            className="bg-transparent outline-none text-sm w-full"
-                                            value={formData.fecha_compra}
-                                            onChange={e => setFormData({ ...formData, fecha_compra: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="border-t border-gray-100 my-4"></div>
-
-                                {/* CALCULADORA */}
-                                <div className="space-y-4 bg-blue-50 p-4 rounded-xl">
-                                    <label className="block text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">
-                                        Calculadora de Costos
-                                    </label>
-
-                                    {/* SELECTOR TIPO */}
-                                    <div className="flex bg-white rounded-lg p-1 shadow-sm">
-                                        {['UNIDAD', 'DOCENA', 'PACK'].map(type => (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => handleCalcChange('tipo_unidad', type)}
-                                                className={`flex-1 text-xs py-2 rounded-md font-medium transition-colors ${formData.tipo_unidad === type
-                                                    ? 'bg-blue-600 text-white shadow'
-                                                    : 'text-gray-500 hover:bg-gray-50'}`}
-                                            >
-                                                {type}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    {/* Si es PACK, pedir cantidad por pack */}
-                                    {formData.tipo_unidad === 'PACK' && (
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <span className="text-gray-600 whitespace-nowrap">Unidades por Pack:</span>
-                                            <input
-                                                type="number"
-                                                className="w-20 p-1 border rounded text-center font-bold text-blue-700"
-                                                value={formData.cantidad_por_paquete}
-                                                onChange={e => handleCalcChange('cantidad_por_paquete', e.target.value)}
-                                            />
-                                        </div>
-                                    )}
-
-                                    {/* INPUTS PRINCIPALES */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs text-gray-500 mb-1 block">
-                                                Cant. ({formData.tipo_unidad === 'UNIDAD' ? 'Unidades' : (formData.tipo_unidad === 'DOCENA' ? 'Docenas' : 'Packs')})
-                                            </label>
-                                            <div className="relative">
-                                                <Package className="absolute left-2 top-2.5 text-gray-400" size={14} />
-                                                <input
-                                                    type="number"
-                                                    className="w-full pl-7 pr-2 py-2 border rounded-lg text-gray-800 font-medium focus:border-blue-500 outline-none"
-                                                    value={formData.cantidad_paquetes}
-                                                    onChange={e => handleCalcChange('cantidad_paquetes', e.target.value)}
-                                                />
+                                                <div>
+                                                    <label className="text-sm text-gray-500 mb-1 block">Costo ({formData.tipo_unidad})</label>
+                                                    <input type="number" className="w-full p-3 border rounded-xl font-bold text-lg" value={formData.costo_por_paquete} onChange={e => handleCalcChange('costo_por_paquete', e.target.value)} step="0.01" />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs text-gray-500 mb-1 block">
-                                                Costo x {formData.tipo_unidad === 'UNIDAD' ? 'Unid.' : (formData.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack')}
-                                            </label>
-                                            <div className="relative">
-                                                <DollarSign className="absolute left-2 top-2.5 text-gray-400" size={14} />
-                                                <input
-                                                    type="number"
-                                                    className="w-full pl-7 pr-2 py-2 border rounded-lg text-gray-800 font-medium focus:border-blue-500 outline-none"
-                                                    step="0.01"
-                                                    value={formData.costo_por_paquete}
-                                                    onChange={e => handleCalcChange('costo_por_paquete', e.target.value)}
-                                                />
+
+                                            {/* COSTO TOTAL Y GASTOS */}
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div>
+                                                    <label className="text-sm text-gray-500 mb-1 block">Costo Total Compra</label>
+                                                    <div className="relative">
+                                                        <DollarSign className="absolute left-3 top-3.5 text-green-600" size={20} />
+                                                        <input type="number" className="w-full pl-10 p-3 bg-green-50 border-green-200 border rounded-xl font-bold text-xl text-green-700" value={formData.costo_total} onChange={e => handleCalcChange('costo_total', e.target.value)} step="0.01" />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="text-sm text-gray-500 mb-1 block">Gastos Importación (USD)</label>
+                                                    <div className="relative">
+                                                        <DollarSign className="absolute left-3 top-3.5 text-orange-600" size={20} />
+                                                        <input type="number" className="w-full pl-10 p-3 bg-orange-50 border-orange-200 border rounded-xl font-bold text-xl text-orange-700" value={formData.gastos_importacion} onChange={e => setFormData({ ...formData, gastos_importacion: e.target.value })} step="0.01" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* RESUMEN USD */}
+                                            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-gray-500">Costo Unitario Real:</span>
+                                                    <span className="text-xl font-bold text-gray-800">${getRealUnitCost()} USD</span>
+                                                </div>
+                                                {formData.tipo_unidad !== 'UNIDAD' && (
+                                                    <div className="flex justify-between items-center pt-2 border-t border-dashed">
+                                                        <span className="text-gray-500">Costo por {formData.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack'}:</span>
+                                                        <span className="text-lg font-bold text-blue-600">${getCostPerPack()} USD</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="pt-2">
-                                        <label className="text-xs text-gray-500 mb-1 block">Costo Total Compra</label>
-                                        <div className="relative">
-                                            <DollarSign className="absolute left-3 top-3 text-green-600" size={18} />
-                                            <input
-                                                type="number"
-                                                className="w-full pl-9 pr-3 py-3 border-2 border-green-100 bg-green-50 rounded-lg text-green-800 font-bold text-lg focus:border-green-500 outline-none"
-                                                step="0.01"
-                                                value={formData.costo_total}
-                                                onChange={e => handleCalcChange('costo_total', e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* NUEVO: GASTOS DE IMPORTACIÓN */}
-                                    <div className="pt-2 border-t border-blue-200 mt-2">
-                                        <label className="text-xs text-gray-500 mb-1 block">
-                                            Gastos de Importación/Envío (USD)
-                                        </label>
-                                        <div className="relative">
-                                            <DollarSign className="absolute left-3 top-3 text-orange-600" size={18} />
-                                            <input
-                                                type="number"
-                                                className="w-full pl-9 pr-3 py-3 border-2 border-orange-100 bg-orange-50 rounded-lg text-orange-800 font-bold text-lg focus:border-orange-500 outline-none"
-                                                step="0.01"
-                                                value={formData.gastos_importacion}
-                                                onChange={e => setFormData({ ...formData, gastos_importacion: e.target.value })}
-                                                placeholder="0.00"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* RESUMEN INTERMEDIO */}
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center text-xs text-gray-500 bg-white p-2 rounded-lg border border-gray-200">
-                                            <span>Costo REAL unitario (USD):</span>
-                                            <span className="font-bold text-gray-800 text-sm">
-                                                ${getRealUnitCost()} / unidad
-                                            </span>
-                                        </div>
-
-                                        {/* Mostrar costo por docena/pack si no es UNIDAD */}
-                                        {formData.tipo_unidad !== 'UNIDAD' && (
-                                            <div className="flex justify-between items-center text-xs text-gray-500 bg-blue-50 p-2 rounded-lg border border-blue-200">
-                                                <span>Costo por {formData.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack'} (USD):</span>
-                                                <span className="font-bold text-blue-800 text-sm">
-                                                    ${getCostPerPack()} / {formData.tipo_unidad.toLowerCase()}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* NUEVO: SELECTOR TIPO DE DÓLAR */}
-                                    <div className="pt-2 border-t border-blue-200 mt-2">
-                                        <label className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2 block">
-                                            Convertir a Pesos Argentinos
-                                        </label>
-
-                                        <div className="flex gap-2 mb-3">
+                                    {/* CONVERSIÓN ARS */}
+                                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                        <h3 className="font-bold text-gray-700 mb-4 uppercase tracking-wide text-sm">Conversión a Pesos</h3>
+                                        <div className="flex gap-4 mb-4">
                                             {['blue', 'oficial'].map(tipo => (
-                                                <button
-                                                    key={tipo}
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, tipo_dolar: tipo })}
-                                                    className={`flex-1 text-xs py-2 px-3 rounded-lg font-medium transition-all border-2 ${formData.tipo_dolar === tipo
-                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow'
-                                                        : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'
-                                                        }`}
-                                                >
-                                                    Dólar {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+                                                <button key={tipo} type="button" onClick={() => setFormData({ ...formData, tipo_dolar: tipo })} className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${formData.tipo_dolar === tipo ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200'}`}>
+                                                    Dólar {tipo.charAt(0).toUpperCase() + tipo.slice(1)} (${formData.cotizacion_dolar.toLocaleString('es-AR')})
                                                 </button>
                                             ))}
                                         </div>
 
-                                        {/* COTIZACIÓN ACTUAL */}
-                                        <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-200 mb-2">
-                                            <div className="flex justify-between items-center text-xs">
-                                                <span className="text-indigo-700">Cotización {formData.tipo_dolar}:</span>
-                                                <span className="font-bold text-indigo-900">
-                                                    {fetchingDolar ? (
-                                                        <Loader2 className="animate-spin inline" size={14} />
-                                                    ) : (
-                                                        `$${formData.cotizacion_dolar.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`
-                                                    )}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        {/* PRECIO FINAL EN ARS */}
-                                        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-xl shadow-lg">
-                                            <div className="text-white/80 text-xs uppercase tracking-wider mb-1">Precio Final por Unidad</div>
-                                            <div className="text-white text-2xl font-bold">
-                                                ${getPriceInARS() > 0 ? parseFloat(getPriceInARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 }) : '0.00'} ARS
-                                            </div>
-                                            <div className="text-white/60 text-xs mt-1">
-                                                = ${getRealUnitCost()} USD × ${formData.cotizacion_dolar.toLocaleString('es-AR')}
-                                            </div>
-
-                                            {/* Mostrar precio por docena/pack si no es UNIDAD */}
-                                            {formData.tipo_unidad !== 'UNIDAD' && parseFloat(getCostPerPackARS()) > 0 && (
-                                                <>
-                                                    <div className="border-t border-white/20 my-2"></div>
-                                                    <div className="text-white/80 text-xs uppercase tracking-wider mb-1">
-                                                        Precio por {formData.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack'}
-                                                    </div>
-                                                    <div className="text-white text-xl font-bold">
-                                                        ${parseFloat(getCostPerPackARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 })} ARS
-                                                    </div>
-                                                    <div className="text-white/60 text-xs mt-1">
-                                                        = ${getCostPerPack()} USD × ${formData.cotizacion_dolar.toLocaleString('es-AR')}
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={uploading}
-                                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg hover:shadow-blue-500/30 transform active:scale-95 transition-all flex justify-center items-center gap-2"
-                                >
-                                    {uploading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                                    {editingId ? 'ACTUALIZAR DATOS' : 'GUARDAR CÁLCULO'}
-                                </button>
-
-                            </form>
-                        </div>
-                    </div>
-
-                    {/* PANEL DERECHO: LISTA */}
-                    <div className="lg:col-span-3">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <FileText className="text-gray-400" />
-                            Historial de Cálculos
-                        </h2>
-
-                        {loading ? (
-                            <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
-                                <Loader2 className="animate-spin relative left-1/2 -ml-3 text-blue-500" size={30} />
-                                <p className="text-gray-400 mt-2">Cargando...</p>
-                            </div>
-                        ) : items.length === 0 ? (
-                            <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-dashed border-gray-300">
-                                <Calculator className="mx-auto text-gray-300 mb-4" size={48} />
-                                <h3 className="text-lg font-medium text-gray-600">Sin registros aún</h3>
-                                <p className="text-gray-400">Usa la calculadora izquierda para agregar tu primer producto.</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {items.map(item => (
-                                    <div key={item.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex gap-4 items-start">
-                                        {/* THUMBNAIL */}
-                                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                                            {item.imagen_url ? (
-                                                <img src={item.imagen_url} className="w-full h-full object-cover" alt={item.nombre} />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                                    <ImageIcon size={24} />
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* CONTENT */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex justify-between items-start">
+                                        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-2xl shadow-xl text-white">
+                                            <div className="text-white/80 text-sm uppercase font-bold mb-2">Precio Final (ARS)</div>
+                                            <div className="flex justify-between items-end">
                                                 <div>
-                                                    <h3 className="font-bold text-gray-800 truncate">{item.nombre}</h3>
-                                                    <p className="text-xs text-gray-500 mb-1">
-                                                        {item.marca && <span className="mr-2 bg-gray-100 px-1 rounded">{item.marca}</span>}
-                                                        {item.codigo && <span>#{item.codigo}</span>}
-                                                    </p>
-                                                    <p className="text-xs text-blue-600 font-medium">
-                                                        {new Date(item.fecha_compra).toLocaleDateString()}
-                                                    </p>
+                                                    <div className="text-4xl font-bold">
+                                                        ${getPriceInARS() > 0 ? parseFloat(getPriceInARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 }) : '0.00'}
+                                                    </div>
+                                                    <div className="text-white/60 text-sm mt-1">por Unidad</div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-lg font-bold text-green-600">${item.costo_total}</p>
-                                                    <p className="text-xs text-gray-500">Total Compra</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="mt-3 flex items-center gap-4 text-sm bg-gray-50 p-2 rounded-lg">
-                                                <div>
-                                                    <span className="text-gray-400 text-xs block">Compra</span>
-                                                    <span className="font-medium">
-                                                        {item.cantidad_paquetes} {item.tipo_unidad.toLowerCase()}(s)
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-gray-400 text-xs block">Costo / {item.tipo_unidad.toLowerCase()}</span>
-                                                    <span className="font-medium">${item.costo_por_paquete}</span>
-                                                </div>
-
-                                                {/* Mostrar costo por docena/pack si NO es UNIDAD */}
-                                                {item.tipo_unidad !== 'UNIDAD' && (
-                                                    <div className="border-l pl-4">
-                                                        <span className="text-gray-400 text-xs block">
-                                                            Costo por {item.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack'}
-                                                        </span>
-                                                        <span className="font-bold text-purple-700">
-                                                            ${(((item.costo_total + (item.gastos_importacion || 0)) / (item.cantidad_paquetes * item.cantidad_por_paquete)) * item.cantidad_por_paquete).toFixed(2)}
-                                                        </span>
+                                                {formData.tipo_unidad !== 'UNIDAD' && parseFloat(getCostPerPackARS()) > 0 && (
+                                                    <div className="text-right">
+                                                        <div className="text-2xl font-bold opacity-90">
+                                                            ${parseFloat(getCostPerPackARS()).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                                        </div>
+                                                        <div className="text-white/60 text-sm mt-1">por {formData.tipo_unidad === 'DOCENA' ? 'Docena' : 'Pack'}</div>
                                                     </div>
                                                 )}
-
-                                                <div className={`${item.tipo_unidad !== 'UNIDAD' ? 'border-l' : 'ml-auto border-l'} pl-4`}>
-                                                    <span className="text-gray-400 text-xs block">Costo Unitario Real</span>
-                                                    <span className="font-bold text-blue-700">
-                                                        ${(((item.costo_total || 0) + (item.gastos_importacion || 0)) / (item.cantidad_paquetes * item.cantidad_por_paquete)).toFixed(2)}
-                                                    </span>
-                                                </div>
                                             </div>
                                         </div>
-
-                                        {/* ACTIONS */}
-                                        <div className="flex flex-col gap-2">
-                                            <button
-                                                onClick={() => handleEdit(item)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                            >
-                                                <Edit2 size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(item.id)}
-                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
                                     </div>
-                                ))}
+
+                                    {/* BOTÓN GUARDAR STICKY */}
+                                    <div className="sticky bottom-0 pt-4 bg-white/95 backdrop-blur">
+                                        <button
+                                            type="submit"
+                                            disabled={uploading}
+                                            className="w-full py-5 text-lg bg-green-600 hover:bg-green-700 text-white rounded-2xl font-bold shadow-xl shadow-green-200 transform active:scale-95 transition-all flex justify-center items-center gap-3"
+                                        >
+                                            {uploading ? <Loader2 className="animate-spin" /> : <Save size={24} />}
+                                            GUARDAR CAMBIOS
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )
+            }
+
         </div>
     );
 };
