@@ -25,6 +25,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import ProductManager from "./pages/admin/ProductManager";
 import CategoryManager from "./pages/admin/CategoryManager";
+import PurchasePlanner from "./pages/admin/PurchasePlanner";
 import AdminLeads from "./pages/admin/AdminLeads";
 import AdminUsers from "./pages/admin/AdminUsers";
 import { SiteConfigEditor } from "./components/admin/SiteConfigEditor";
@@ -151,6 +152,14 @@ const AppContent = ({ cart, addToCart, removeFromCart }) => {
             element={
               <ProtectedRoute allowedRoles={['admin', 'owner', 'tenant_owner']}>
                 <CategoryManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/purchases"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'owner', 'tenant_owner']}>
+                <PurchasePlanner />
               </ProtectedRoute>
             }
           />

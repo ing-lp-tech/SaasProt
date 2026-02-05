@@ -61,13 +61,12 @@ import tiktok from "../assets/tiktok.svg";
 import { Instagram, Facebook, Linkedin, Youtube, Twitter } from "lucide-react";
 import avatarLuisPatty from "../assets/avatarLuisPattyJpg.jpg";
 import logoEngineer from "../assets/logoEngineer.jpg";
-import logoluisys from "../assets/LogoLuisys.png";
 import { siteConfigService } from "../services/siteConfigService";
 import { useTenant } from "../contexts/TenantContext";
 
 const Footer = ({ id }) => {
   const { tenant } = useTenant();
-  const [footerLogo, setFooterLogo] = useState(logoluisys);
+  const [footerLogo, setFooterLogo] = useState(null);
   const [footerTitle, setFooterTitle] = useState("Síguenos en nuestras redes");
   /* const [footerCopyright, setFooterCopyright] = useState(""); */
   /* const [footerDesignedBy, setFooterDesignedBy] = useState("Ing. Luis Patty Mamani"); const [footerDesignedByUrl, setFooterDesignedByUrl] = useState("https://www.linkedin.com/in/luis-patty-mamani/"); */

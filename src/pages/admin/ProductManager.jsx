@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { Link } from 'react-router-dom';
 import { useTenant } from '../../contexts/TenantContext'; // Importar TenantContext
 import { Package, Upload, DollarSign, Tag, Image as ImageIcon, Edit, X, Save, Loader, ArrowLeft, ExternalLink } from 'lucide-react';
+import { compressImage } from '../../utils/imageOptimizer';
 import './ProductManager.css';
 
 // Componente de Loading Divertido
@@ -226,14 +227,35 @@ export default function ProductManager() {
             if (formData.nuevasImagenes && formData.nuevasImagenes.length > 0) {
                 const uploadedUrls = [];
 
+                // Importar dinámicamente o asumir que está disponible si lo importamos arriba
+                // Para simplificar el diff, asumiré que agregué el import arriba. 
+                // Pero como este tool reemplaza un bloque, debo asegurarme de que la lógica de compresión esté aquí.
+
+                // Nota: El import se agregará en un paso separado o al inicio del archivo si fuera un replace total.
+                // Aquí usaré la función importada.
+
                 // Subir cada imagen
                 for (const file of formData.nuevasImagenes) {
-                    const fileExt = file.name.split('.').pop();
+                    // COMPRESIÓN DE IMAGEN
+                    let fileToUpload = file;
+                    try {
+                        // eslint-disable-next-line no-undef
+                        fileToUpload = await compressImage(file);
+                        console.log(`Original: ${(file.size / 1024).toFixed(2)}KB, Compressed: ${(fileToUpload.size / 1024).toFixed(2)}KB`);
+                    } catch (err) {
+                        console.warn('Falló la compresión, subiendo original:', err);
+                    }
+
+                    const fileExt = fileToUpload.name.split('.').pop();
                     const fileName = `${tenant.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`; // ORGANIZAR POR TENANT
 
                     const { error: uploadError } = await supabase.storage
                         .from('productos-imagenes')
-                        .upload(fileName, file);
+                        .upload(fileName, fileToUpload, {
+                            contentType: 'image/webp', // Asegurar content type correcto
+                            cacheControl: '3600',
+                            upsert: false
+                        });
 
                     if (uploadError) throw uploadError;
 

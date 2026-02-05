@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import { compressImage } from '../utils/imageOptimizer';
 
 export const siteConfigService = {
     // Obtener todas las configuraciones del tenant actual
@@ -151,7 +152,17 @@ export const siteConfigService = {
             const tenantId = user.user_metadata?.tenant_id || 'default';
 
             // Crear nombre único y estructura de carpetas organizada
-            const fileExt = file.name.split('.').pop();
+            // Primero comprimir la imagen
+            let fileToUpload = file;
+            try {
+                // eslint-disable-next-line no-undef
+                fileToUpload = await compressImage(file, { maxWidth: 1920 }); // Permitir mayor resolución para backgrounds
+                console.log(`Config Upload - Original: ${(file.size / 1024).toFixed(2)}KB, Compressed: ${(fileToUpload.size / 1024).toFixed(2)}KB`);
+            } catch (err) {
+                console.warn('Falló la compresión en siteConfig, subiendo original:', err);
+            }
+
+            const fileExt = fileToUpload.name.split('.').pop();
             const timestamp = Date.now();
             const randomStr = Math.random().toString(36).substring(7);
             const fileName = `${path}-${timestamp}-${randomStr}.${fileExt}`;
@@ -163,7 +174,7 @@ export const siteConfigService = {
             // Subir archivo
             const { error: uploadError } = await supabase.storage
                 .from('productos-imagenes')
-                .upload(filePath, file, {
+                .upload(filePath, fileToUpload, {
                     cacheControl: '3600',
                     upsert: false
                 });

@@ -40,6 +40,12 @@ export default function Dashboard() {
                             <p>Agregar, editar y administrar productos</p>
                         </div>
 
+                        <div className="dashboard-card bg-green-50 hover:bg-green-100" onClick={() => navigate('/admin/purchases')}>
+                            <Package size={32} className="text-green-600" />
+                            <h2 className="text-green-900">Planificar Compras</h2>
+                            <p className="text-green-700">Calculadora de costos y lista de posibles compras</p>
+                        </div>
+
                         <div className="dashboard-card" onClick={() => navigate('/admin/categories')}>
                             <Folder size={32} />
                             <h2>Gestionar Categorías</h2>
