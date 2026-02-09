@@ -59,11 +59,11 @@ const ProductModal = ({
       case "plotters":
         return (
           <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
               <div>
                 <p className="font-semibold">Pre-venta (USD):</p>
                 <p>${product.precio_pre_venta.toLocaleString()}</p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Pesos: $
                   {dolarOficial
                     ? (product.precio_pre_venta * dolarOficial).toLocaleString()
@@ -88,11 +88,11 @@ const ProductModal = ({
               </button>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
               <div>
                 <p className="font-semibold">Stock actual (USD):</p>
                 <p>${product.precio_de_llegada.toLocaleString()}</p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Pesos: $
                   {dolarOficial
                     ? (
@@ -127,7 +127,7 @@ const ProductModal = ({
             {Object.entries(product.combos).map(([combo, price]) => (
               <div
                 key={combo}
-                className="flex justify-between items-center p-3 bg-primary/5 rounded-lg"
+                className="flex justify-between items-center p-3 bg-primary/5 dark:bg-primary/10 rounded-lg"
               >
                 <div>
                   <p className="font-semibold capitalize">
@@ -183,7 +183,7 @@ const ProductModal = ({
               </p>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
               <div>
                 <p className="font-semibold">Combo Básico:</p>
                 <p>${product.combos.basico.toLocaleString()}</p>
@@ -206,7 +206,7 @@ const ProductModal = ({
               </button>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
               <div>
                 <p className="font-semibold">Con Monitor:</p>
                 <p>${product.combos.conMonitor.toLocaleString()}</p>
@@ -258,7 +258,7 @@ const ProductModal = ({
               </p>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-lg">
               <div>
                 <p className="font-semibold">Kit:</p>
                 <p>
@@ -286,7 +286,7 @@ const ProductModal = ({
               </button>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
               <div>
                 <p className="font-semibold">+ instalación:</p>
                 <p>
@@ -328,7 +328,7 @@ const ProductModal = ({
               ))}
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+            <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-lg">
               <div>
                 <p className="font-semibold">Unidad:</p>
                 <p>
@@ -377,11 +377,11 @@ const ProductModal = ({
 
             {/* Precio USD */}
             {product.precio_usd && (
-              <div className="flex justify-between items-center p-4 bg-primary/5 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-primary/5 dark:bg-primary/10 rounded-lg">
                 <div>
                   <p className="font-semibold text-primary">Precio Regular (USD):</p>
                   <p className="text-xl font-bold">${product.precio_usd.toLocaleString()}</p>
-                  {dolarOficial && <p className="text-sm text-gray-600">ARS: ${(product.precio_usd * dolarOficial).toLocaleString()}</p>}
+                  {dolarOficial && <p className="text-sm text-gray-600 dark:text-gray-300">ARS: ${(product.precio_usd * dolarOficial).toLocaleString()}</p>}
                 </div>
                 <button
                   onClick={(e) => handleAddToCart({
@@ -402,7 +402,7 @@ const ProductModal = ({
 
             {/* Precio ARS */}
             {product.precio_ars && (
-              <div className="flex justify-between items-center p-4 bg-primary/5 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-primary/5 dark:bg-primary/10 rounded-lg">
                 <div>
                   <p className="font-semibold text-primary">Precio Regular (ARS):</p>
                   <p className="text-xl font-bold">${parseFloat(product.precio_ars).toLocaleString()}</p>
@@ -426,12 +426,12 @@ const ProductModal = ({
 
             {/* Precio Mayorista USD */}
             {product.precio_mayorista_usd && (
-              <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
                 <div>
                   <p className="font-semibold text-green-900">Mayorista (USD):</p>
-                  <p className="text-sm text-gray-600">Min: {product.cantidad_minima_mayorista}u</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Min: {product.cantidad_minima_mayorista}u</p>
                   <p className="text-xl font-bold">${product.precio_mayorista_usd.toLocaleString()}</p>
-                  {dolarOficial && <p className="text-sm text-gray-600">ARS: ${(product.precio_mayorista_usd * dolarOficial).toLocaleString()}</p>}
+                  {dolarOficial && <p className="text-sm text-gray-600 dark:text-gray-300">ARS: ${(product.precio_mayorista_usd * dolarOficial).toLocaleString()}</p>}
                 </div>
                 <button
                   onClick={(e) => handleAddToCart({
@@ -452,10 +452,10 @@ const ProductModal = ({
 
             {/* Precio Mayorista ARS */}
             {product.precio_mayorista_ars && (
-              <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
                 <div>
                   <p className="font-semibold text-green-900">Mayorista (ARS):</p>
-                  <p className="text-sm text-gray-600">Min: {product.cantidad_minima_mayorista}u</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Min: {product.cantidad_minima_mayorista}u</p>
                   <p className="text-xl font-bold">${parseFloat(product.precio_mayorista_ars).toLocaleString()}</p>
                 </div>
                 <button
@@ -481,9 +481,9 @@ const ProductModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
-          <h2 className="text-xl font-bold">
+      <div className="bg-white dark:bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white dark:bg-gray-900 p-4 border-b dark:border-gray-700 flex justify-between items-center z-10">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             {product.nombre || product.name}
           </h2>
           <button
@@ -498,7 +498,7 @@ const ProductModal = ({
         <div className="p-6">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="md:w-1/2">
-              <div className="h-64 md:h-96 overflow-hidden rounded-lg bg-gray-100 relative group flex items-center justify-center">
+              <div className="h-64 md:h-96 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 relative group flex items-center justify-center">
 
                 {/* Imagen Principal */}
                 <img
@@ -563,7 +563,7 @@ const ProductModal = ({
             </div>
 
             <div className="md:w-1/2">
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {product.descripcion || product.description}
               </p>
 
@@ -766,7 +766,7 @@ const ProductSection = ({ id, cart, addToCart }) => {
               onClick={() => handleFilterChange("all")}
               className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === "all"
                 ? "bg-primary text-white shadow-primary/30"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
             >
               Todos
@@ -778,7 +778,7 @@ const ProductSection = ({ id, cart, addToCart }) => {
                   onClick={() => handleFilterChange(cat.nombre)}
                   className={`flex-shrink-0 snap-start px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm whitespace-nowrap ${activeFilter === cat.nombre
                     ? "bg-primary text-white shadow-primary/30"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                 >
                   {cat.nombre}
@@ -807,7 +807,7 @@ const ProductSection = ({ id, cart, addToCart }) => {
         {loading && (
           <div className="mt-16 text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Cargando productos...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-300">Cargando productos...</p>
           </div>
         )}
 
@@ -842,7 +842,7 @@ const ProductSection = ({ id, cart, addToCart }) => {
                         </span>
                       </h3>
                       {categoria.descripcion && (
-                        <p className="text-gray-600 text-lg max-w-3xl mx-auto px-4 mt-4">
+                        <p className="text-gray-600 dark:text-gray-300 text-lg max-w-3xl mx-auto px-4 mt-4">
                           {categoria.descripcion}
                         </p>
                       )}
@@ -896,16 +896,16 @@ const ProductSection = ({ id, cart, addToCart }) => {
 
         {/* ===== MENSAJE TIENDA VACÍA (SOLO TENANTS) ===== */}
         {!loading && !useSupabase && tenant && (
-          <div className="mt-20 text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100 mx-4 max-w-3xl md:mx-auto">
-            <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShoppingCart className="h-10 w-10 text-gray-400" />
+          <div className="mt-20 text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mx-4 max-w-3xl md:mx-auto">
+            <div className="bg-gray-100 dark:bg-gray-700 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingCart className="h-10 w-10 text-gray-400 dark:text-gray-500" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Esta tienda aún no tiene productos</h3>
-            <p className="text-gray-500 mb-6">
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Esta tienda aún no tiene productos</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
               El catálogo está vacío o no se pudieron cargar los productos.
             </p>
             {/* Hint for owner */}
-            <div className="bg-blue-50 text-blue-800 p-4 rounded-lg inline-block text-sm max-w-md">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 p-4 rounded-lg inline-block text-sm max-w-md">
               <p className="font-semibold mb-1">💡 ¿Eres el dueño?</p>
               <p>Ve a tu Panel de Admin {'>'} Categorías y crea tu primera categoría (ej: "Camisas", "Zapatos"). Luego añade productos en la sección Productos.</p>
             </div>
@@ -927,7 +927,7 @@ const ProductSection = ({ id, cart, addToCart }) => {
                   {allPlotters.map((plotter) => (
                     <div
                       key={plotter.id}
-                      className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition cursor-pointer"
+                      className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition cursor-pointer"
                       onClick={() => handleProductClick(plotter, "plotters")}
                     >
                       <div className="h-48 overflow-hidden relative">
@@ -949,24 +949,24 @@ const ProductSection = ({ id, cart, addToCart }) => {
                       <div className="p-6 flex flex-col justify-between h-full">
                         <div>
                           <div className="flex justify-between items-start">
-                            <h3 className="text-xl font-bold text-gray-900">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                               {plotter.nombre}
                             </h3>
                             <span
                               className={`${plotter.id <= 4
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-green-100 text-green-800"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
+                                : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
                                 } text-sm font-semibold px-2.5 py-0.5 rounded`}
                             >
                               {plotter.id <= 4 ? "Inyección" : "Corte"}
                             </span>
                           </div>
 
-                          <p className="mt-2 text-gray-600 line-clamp-2">
+                          <p className="mt-2 text-gray-600 dark:text-gray-300 line-clamp-2">
                             {plotter.descripcion}
                           </p>
 
-                          <div className="mt-4 text-sm text-gray-700 space-y-2">
+                          <div className="mt-4 text-sm text-gray-700 dark:text-gray-300 space-y-2">
                             <div className="flex items-center justify-between">
                               <p>
                                 <span className="font-semibold">
@@ -1001,10 +1001,10 @@ const ProductSection = ({ id, cart, addToCart }) => {
 
         {/* Sección de características (siempre visible) */}
         <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
-            <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition">
+            <div className="bg-blue-100 dark:bg-blue-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <svg
-                className="w-6 h-6 text-blue-600"
+                className="w-6 h-6 text-blue-600 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1017,19 +1017,19 @@ const ProductSection = ({ id, cart, addToCart }) => {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-3">
+            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
               Velocidad de impresión
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               Plotters de alta velocidad que reducen tus tiempos de producción
               hasta en un 60% comparado con métodos tradicionales.
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
-            <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition">
+            <div className="bg-blue-100 dark:bg-blue-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <svg
-                className="w-6 h-6 text-blue-600"
+                className="w-6 h-6 text-blue-600 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1042,17 +1042,17 @@ const ProductSection = ({ id, cart, addToCart }) => {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-3">Papel especializado</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Papel especializado</h3>
+            <p className="text-gray-600 dark:text-gray-300">
               Nuestros rollos de papel para tizado ofrecen la resistencia y
               flexibilidad perfecta para el trabajo con patrones.
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
-            <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition">
+            <div className="bg-blue-100 dark:bg-blue-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <svg
-                className="w-6 h-6 text-blue-600"
+                className="w-6 h-6 text-blue-600 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1065,8 +1065,8 @@ const ProductSection = ({ id, cart, addToCart }) => {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-3">Soporte técnico</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Soporte técnico</h3>
+            <p className="text-gray-600 dark:text-gray-300">
               Asesoramiento permanente por expertos en patronaje digital.
               Instalación, capacitación y mantenimiento incluido.
             </p>

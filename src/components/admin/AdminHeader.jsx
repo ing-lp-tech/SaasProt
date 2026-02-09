@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, Store } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTenant } from '../../contexts/TenantContext';
-import saasLogo from '../../assets/logo_saas_custom.png';
 
 export default function AdminHeader({ title, subtitle }) {
     const { user, role, roleError, signOut } = useAuth();
@@ -14,16 +13,23 @@ export default function AdminHeader({ title, subtitle }) {
         navigate('/login');
     };
 
-    const logoSrc = tenant?.config?.navbar_logo_url || saasLogo;
+    // Usar logo del tenant si existe, sino mostrar placeholder
+    const hasLogo = tenant?.logo_url;
 
     return (
         <header className="bg-white shadow-sm py-4 px-6 flex justify-between items-center mb-8 rounded-xl">
             <div className="flex items-center gap-4">
-                <img
-                    src={logoSrc}
-                    alt={tenant?.name || "Saas Inge"}
-                    className="h-12 w-auto object-contain"
-                />
+                {hasLogo ? (
+                    <img
+                        src={tenant.logo_url}
+                        alt={tenant?.name || "Logo"}
+                        className="h-12 w-auto object-contain"
+                    />
+                ) : (
+                    <div className="h-12 w-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+                        <Store size={24} className="text-white" />
+                    </div>
+                )}
                 <div className="border-l pl-4 border-gray-200">
                     <h1 className="text-xl font-bold text-gray-800">{title}</h1>
                     {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
@@ -35,7 +41,7 @@ export default function AdminHeader({ title, subtitle }) {
                     <p className="text-sm font-medium text-gray-900">{user?.email}</p>
                     <div className="flex items-center justify-end gap-2">
                         <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full uppercase font-bold tracking-wide">
-                            {role === 'owner' ? 'Super Admin' : role}
+                            {role === 'owner' ? 'SUPER_ADMIN' : (role === 'tenant_owner' ? 'TENANT_OWNER' : role)}
                         </span>
                     </div>
                 </div>

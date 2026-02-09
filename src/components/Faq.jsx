@@ -64,14 +64,14 @@ export default function FAQ({ items }) {
   };
 
   return (
-    <section id="preguntasfrecuentes" className="py-12 px-4 md:px-8 bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
+    <section id="preguntasfrecuentes" className="py-12 px-4 md:px-8 bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
           {faqTitle}
         </h2>
         {dataToDisplay.map((category, catIndex) => (
           <div key={catIndex} className="mb-10">
-            <h3 className="text-xl font-semibold mb-4 text-indigo-600 dark:text-indigo-400">
+            <h3 className="text-xl font-semibold mb-4 text-primary dark:text-indigo-400">
               {category.category}
             </h3>
             <div className="space-y-4">
@@ -83,15 +83,15 @@ export default function FAQ({ items }) {
                 return (
                   <div
                     key={idx}
-                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 shadow-sm transition-colors duration-300"
+                    className="border border-gray-200 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 shadow-sm transition-colors duration-300"
                   >
                     <button
-                      className="flex justify-between w-full text-left font-medium text-gray-800 dark:text-gray-100"
+                      className="flex justify-between w-full text-left font-medium text-gray-900 dark:text-gray-100"
                       onClick={() => toggle(idx)}
                     >
                       <span>{item.question}</span>
                       <ChevronDown
-                        className={`h-5 w-5 transition-transform text-gray-600 dark:text-gray-400 ${isOpen ? "rotate-180" : ""
+                        className={`h-5 w-5 transition-transform text-gray-400 ${isOpen ? "rotate-180" : ""
                           }`}
                       />
                     </button>
@@ -107,20 +107,20 @@ export default function FAQ({ items }) {
                 return (
                   <div
                     key={idx}
-                    className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm"
+                    className="border border-gray-200 dark:border-slate-700 rounded-lg p-4 bg-white dark:bg-slate-800 shadow-sm transition-colors duration-300"
                   >
                     <button
-                      className="flex justify-between w-full text-left font-medium text-gray-800"
+                      className="flex justify-between w-full text-left font-medium text-gray-900 dark:text-gray-100"
                       onClick={() => toggle(idx)}
                     >
                       <span>{item.question}</span>
                       <ChevronDown
-                        className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""
+                        className={`h-5 w-5 transition-transform text-gray-400 ${isOpen ? "rotate-180" : ""
                           }`}
                       />
                     </button>
                     {isOpen && (
-                      <p className="mt-3 text-gray-600">{item.answer}</p>
+                      <p className="mt-3 text-gray-600 dark:text-gray-300">{item.answer}</p>
                     )}
                   </div>
                 );

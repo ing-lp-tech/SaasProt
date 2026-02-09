@@ -28,7 +28,13 @@ export default function Dashboard() {
                 {/* Solo mostrar si NO es Super Admin, O si es Super Admin PERO está dentro de un tenant (God Mode activo) */}
                 {(role === 'admin' || role === 'tenant_owner' || (role === 'owner' && tenant)) && (
                     <>
-                        <div className="dashboard-card bg-blue-50 hover:bg-blue-100" onClick={() => window.open('/', '_blank')}>
+                        <div
+                            className="dashboard-card bg-blue-50 hover:bg-blue-100"
+                            onClick={() => {
+                                const url = tenant ? `/?tenant=${tenant.subdomain}` : '/';
+                                window.open(url, '_blank');
+                            }}
+                        >
                             <Globe size={32} className="text-blue-600" />
                             <h2 className="text-blue-900">Ver Mi Tienda</h2>
                             <p className="text-blue-700">Ir a la página principal pública</p>

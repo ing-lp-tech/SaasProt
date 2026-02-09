@@ -74,11 +74,11 @@ const HeroSection = ({ id, dolarOficial }) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-white dark:from-gray-900 dark:to-gray-800"></div>
+          <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
         )}
 
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/20 dark:from-black/70 dark:via-black/50 dark:to-black/30"></div>
+        {/* Overlay más oscuro para mejor lectura */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40"></div>
       </div>
 
       {/* Content */}

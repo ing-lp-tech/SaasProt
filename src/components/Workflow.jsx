@@ -86,21 +86,21 @@ const Workflow = ({ id }) => {
                     <CheckCircle2 className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-base text-gray-600 leading-relaxed">
+                    <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
                 </div>
               ))}
 
-              <div className="mt-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <h3 className="text-lg font-bold text-[rgb(37,99,235)] mb-2">
+              <div className="mt-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-bold text-[rgb(37,99,235)] dark:text-blue-400 mb-2">
                   ¿Por qué elegirnos?
                 </h3>
-                <p className="text-gray-700 text-sm">
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Somos especialistas en insumos para patronaje digital.
                   Ofrecemos plotters de alta precisión y papel técnico
                   específico para tizado en confección de ropa, con

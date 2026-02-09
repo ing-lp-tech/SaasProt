@@ -567,7 +567,7 @@ const PurchasePlanner = () => {
                                             <label className="block text-sm font-bold text-gray-700 mb-2">Nombre del Producto</label>
                                             <input
                                                 type="text"
-                                                className="w-full text-lg p-4 bg-gray-50 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none"
+                                                className="w-full text-lg p-4 bg-gray-50 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"
                                                 required
                                                 value={formData.nombre}
                                                 onChange={e => setFormData({ ...formData, nombre: e.target.value })}
@@ -575,15 +575,15 @@ const PurchasePlanner = () => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-2">Marca</label>
-                                            <input type="text" className="w-full p-4 bg-gray-50 rounded-xl border outline-none" value={formData.marca} onChange={e => setFormData({ ...formData, marca: e.target.value })} />
+                                            <input type="text" className="w-full p-4 bg-gray-50 rounded-xl border outline-none text-gray-800" value={formData.marca} onChange={e => setFormData({ ...formData, marca: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-2">Código</label>
-                                            <input type="text" className="w-full p-4 bg-gray-50 rounded-xl border outline-none" value={formData.codigo} onChange={e => setFormData({ ...formData, codigo: e.target.value })} />
+                                            <input type="text" className="w-full p-4 bg-gray-50 rounded-xl border outline-none text-gray-800" value={formData.codigo} onChange={e => setFormData({ ...formData, codigo: e.target.value })} />
                                         </div>
                                         <div className="col-span-2">
                                             <label className="block text-sm font-bold text-gray-700 mb-2">Fecha de Compra</label>
-                                            <input type="date" className="w-full p-4 bg-gray-50 rounded-xl border outline-none" value={formData.fecha_compra} onChange={e => setFormData({ ...formData, fecha_compra: e.target.value })} />
+                                            <input type="date" className="w-full p-4 bg-gray-50 rounded-xl border outline-none text-gray-800" value={formData.fecha_compra} onChange={e => setFormData({ ...formData, fecha_compra: e.target.value })} />
                                         </div>
                                     </div>
 
@@ -615,17 +615,17 @@ const PurchasePlanner = () => {
                                                 {formData.tipo_unidad === 'PACK' && (
                                                     <div className="col-span-2">
                                                         <label className="text-sm font-medium text-gray-500 mb-1 block">Unidades por Pack</label>
-                                                        <input type="number" className="w-full p-3 border rounded-xl text-center font-bold text-blue-800 text-lg" value={formData.cantidad_por_paquete} onChange={e => handleCalcChange('cantidad_por_paquete', e.target.value)} />
+                                                        <input type="number" className="w-full p-3 border rounded-xl text-center font-bold text-gray-800 text-lg bg-white" value={formData.cantidad_por_paquete} onChange={e => handleCalcChange('cantidad_por_paquete', e.target.value)} />
                                                     </div>
                                                 )}
 
                                                 <div>
                                                     <label className="text-sm text-gray-500 mb-1 block">Cantidad ({formData.tipo_unidad})</label>
-                                                    <input type="number" className="w-full p-3 border rounded-xl font-bold text-lg" value={formData.cantidad_paquetes} onChange={e => handleCalcChange('cantidad_paquetes', e.target.value)} />
+                                                    <input type="number" className="w-full p-3 border rounded-xl font-bold text-lg text-gray-800 bg-white" value={formData.cantidad_paquetes} onChange={e => handleCalcChange('cantidad_paquetes', e.target.value)} />
                                                 </div>
                                                 <div>
                                                     <label className="text-sm text-gray-500 mb-1 block">Costo ({formData.tipo_unidad})</label>
-                                                    <input type="number" className="w-full p-3 border rounded-xl font-bold text-lg" value={formData.costo_por_paquete} onChange={e => handleCalcChange('costo_por_paquete', e.target.value)} step="0.01" />
+                                                    <input type="number" className="w-full p-3 border rounded-xl font-bold text-lg text-gray-800 bg-white" value={formData.costo_por_paquete} onChange={e => handleCalcChange('costo_por_paquete', e.target.value)} step="0.01" />
                                                 </div>
                                             </div>
 

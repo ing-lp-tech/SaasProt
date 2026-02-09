@@ -89,12 +89,15 @@
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.2s;
+    background: #ffffff;
+    color: #1f2937;
 }
 
 .form-field input:focus,
 .form-field textarea:focus {
     outline: none;
     border-color: #6366f1;
+    background: #ffffff;
 }
 
 .form-field small {
@@ -108,20 +111,25 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #10b981;
-    color: white;
+    background: #10b981 !important;
+    color: white !important;
     border: none;
-    padding: 12px 24px;
+    padding: 14px 28px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 15px;
+    font-weight: 700;
+    font-size: 16px;
     transition: all 0.2s;
+    width: 100%;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    margin-top: 20px;
 }
 
 .btn-submit:hover {
-    background: #059669;
+    background: #059669 !important;
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
 .categories-list h3 {

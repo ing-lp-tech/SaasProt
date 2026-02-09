@@ -1,22 +1,55 @@
 // Servicio para obtener cotización del dólar
 // Usa API gratuita dolarapi.com
 
-const DOLAR_API_URL = 'https://dolarapi.com/v1/dolares/oficial';
-const CACHE_KEY = 'dolar_quote_cache';
+const DOLAR_OFICIAL_URL = 'https://dolarapi.com/v1/dolares/oficial';
+const DOLAR_BLUE_URL = 'https://dolarapi.com/v1/dolares/blue';
+const CACHE_KEY_OFICIAL = 'dolar_oficial_cache';
+const CACHE_KEY_BLUE = 'dolar_blue_cache';
 const CACHE_DURATION = 15 * 60 * 1000; // 15 minutos
 
 export const dolarService = {
-    // Obtener cotización del dólar
+    // Obtener cotización del dólar oficial y blue
     async getCotizacion() {
         try {
+            const [oficial, blue] = await Promise.all([
+                this.getOficial(),
+                this.getBlue()
+            ]);
+
+            return {
+                oficial,
+                blue
+            };
+        } catch (error) {
+            console.error('Error getting dolar quotes:', error);
+            return {
+                oficial: null,
+                blue: null
+            };
+        }
+    },
+
+    // Obtener dólar oficial
+    async getOficial() {
+        return this.fetchQuote(DOLAR_OFICIAL_URL, CACHE_KEY_OFICIAL);
+    },
+
+    // Obtener dólar blue
+    async getBlue() {
+        return this.fetchQuote(DOLAR_BLUE_URL, CACHE_KEY_BLUE);
+    },
+
+    // Método genérico para fetch
+    async fetchQuote(url, cacheKey) {
+        try {
             // Verificar cache primero
-            const cached = this.getFromCache();
+            const cached = this.getFromCache(cacheKey);
             if (cached) {
                 return cached;
             }
 
             // Fetch desde API
-            const response = await fetch(DOLAR_API_URL);
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error('Error fetching dolar quote');
@@ -32,14 +65,14 @@ export const dolarService = {
             };
 
             // Guardar en cache
-            this.saveToCache(quote);
+            this.saveToCache(cacheKey, quote);
 
             return quote;
         } catch (error) {
-            console.error('Error getting dolar quote:', error);
+            console.error('Error getting quote:', error);
 
             // Intentar retornar del cache aunque esté expirado
-            const cached = this.getFromCache(true);
+            const cached = this.getFromCache(cacheKey, true);
             if (cached) {
                 return { ...cached, isStale: true };
             }
@@ -50,9 +83,9 @@ export const dolarService = {
     },
 
     // Obtener desde cache
-    getFromCache(ignoreExpiry = false) {
+    getFromCache(cacheKey, ignoreExpiry = false) {
         try {
-            const cached = localStorage.getItem(CACHE_KEY);
+            const cached = localStorage.getItem(cacheKey);
             if (!cached) return null;
 
             const data = JSON.parse(cached);
@@ -71,9 +104,9 @@ export const dolarService = {
     },
 
     // Guardar en cache
-    saveToCache(quote) {
+    saveToCache(cacheKey, quote) {
         try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(quote));
+            localStorage.setItem(cacheKey, JSON.stringify(quote));
         } catch (error) {
             console.error('Error saving cache:', error);
         }
@@ -82,7 +115,8 @@ export const dolarService = {
     // Limpiar cache
     clearCache() {
         try {
-            localStorage.removeItem(CACHE_KEY);
+            localStorage.removeItem(CACHE_KEY_OFICIAL);
+            localStorage.removeItem(CACHE_KEY_BLUE);
         } catch (error) {
             console.error('Error clearing cache:', error);
         }

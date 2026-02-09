@@ -17,9 +17,9 @@ export default function LandingPage() {
     const whatsappUrl = "https://wa.me/5491162020911?text=Hola!%20Quiero%20mas%20info%20sobre%20IngeStore";
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans">
+        <div className="min-h-screen bg-slate-950 font-sans">
             {/* Navbar */}
-            <nav className="bg-white/90 backdrop-blur-md shadow-sm py-4 px-6 md:px-12 sticky top-0 z-50 transition-all duration-300">
+            <nav className="bg-slate-900/90 backdrop-blur-md shadow-sm py-4 px-6 md:px-12 sticky top-0 z-50 transition-all duration-300 border-b border-slate-800">
                 <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
                     <div className="flex items-center gap-3">
                         <img src={saasLogo} alt="IngeStore Logo" className="h-10 w-10 object-cover rounded-full border-2 border-indigo-100 shadow-sm" />
@@ -29,11 +29,12 @@ export default function LandingPage() {
                     </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
+                    <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-300">
                         <a href="#" className="hover:text-blue-600 transition">Inicio</a>
                         <a href="#beneficios" className="hover:text-blue-600 transition">Beneficios</a>
                         <a href="#planes" className="hover:text-blue-600 transition">Planes</a>
                         <a href="#about-me" className="hover:text-blue-600 transition">Nosotros</a>
+                        <a href="#preguntasfrecuentes" className="hover:text-blue-600 transition">FAQ</a>
                         <button
                             onClick={() => document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' })}
                             className="hover:text-blue-600 transition"
@@ -61,12 +62,13 @@ export default function LandingPage() {
 
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-xl py-6 px-6 flex flex-col gap-4 animate-in slide-in-from-top-5 fade-in duration-200">
-                        <a href="#" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-800">Inicio</a>
-                        <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-800">Beneficios</a>
-                        <a href="#planes" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-800">Planes</a>
-                        <a href="#about-me" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-800">Nosotros</a>
-                        <div className="h-px bg-gray-100 my-2"></div>
+                    <div className="md:hidden absolute top-full left-0 w-full bg-slate-900 border-b border-slate-800 shadow-xl py-6 px-6 flex flex-col gap-4 animate-in slide-in-from-top-5 fade-in duration-200">
+                        <a href="#" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-300">Inicio</a>
+                        <a href="#beneficios" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-300">Beneficios</a>
+                        <a href="#planes" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-300">Planes</a>
+                        <a href="#about-me" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-300">Nosotros</a>
+                        <a href="#preguntasfrecuentes" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-gray-300">FAQ</a>
+                        <div className="h-px bg-gray-700 my-2"></div>
                         <button
                             onClick={() => navigate('/login')}
                             className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-md"
@@ -78,31 +80,34 @@ export default function LandingPage() {
             </nav>
 
             {/* Hero Section */}
-            <div className="relative overflow-hidden bg-slate-50">
+            <div className="relative overflow-hidden bg-slate-950">
                 {/* Background Blobs */}
                 <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
                 <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
 
                 <div className="max-w-7xl mx-auto px-6 py-20 md:py-32 flex flex-col md:flex-row items-center gap-16 relative z-10">
                     <div className="md:w-1/2 space-y-8 text-center md:text-left">
-                        <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm font-semibold text-indigo-600 shadow-sm mx-auto md:mx-0">
+                        <div className="inline-flex items-center gap-2 bg-indigo-600/20 border border-indigo-500/30 rounded-full px-4 py-1.5 text-sm font-semibold text-indigo-300 shadow-sm mx-auto md:mx-0 backdrop-blur-sm">
                             <span className="relative flex h-3 w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-400"></span>
                             </span>
-                            Plataforma #1 para Vender Online
+                            El futuro ya llegó a Argentina
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-[1.1] tracking-tight">
-                            Tu Negocio, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Abierto 24/7.</span>
+                        <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.1] tracking-tight">
+                            El futuro de los negocios <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">ya llegó a Argentina</span>
                         </h1>
-                        <p className="text-xl text-gray-600 leading-relaxed max-w-lg mx-auto md:mx-0">
-                            Olvídate de alquilar local físico. Ten tu propia sucursal digital y vende sin límites, sin fronteras y con total libertad.
+                        <p className="text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto md:mx-0">
+                            Mientras algunos siguen pagando <span className="text-red-400 font-bold">alquileres millonarios</span>, otros venden <span className="text-green-400 font-bold">24 horas al día</span> con una tienda online.
+                        </p>
+                        <p className="text-lg text-indigo-300 font-semibold italic">
+                            💡 Tu negocio no debería depender de una persiana.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-                            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 bg-green-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-green-700 transition transform hover:-translate-y-1 shadow-xl hover:shadow-2xl">
-                                <MessageCircle size={24} />
-                                ¡Quiero mi App!
+                            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 bg-green-600 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-green-700 transition transform hover:-translate-y-1 shadow-xl hover:shadow-2xl hover:shadow-green-500/50">
+                                <MessageCircle size={28} />
+                                👉 Quiero mi tienda web
                             </a>
                             <button
                                 onClick={() => setIsModalOpen(true)}
@@ -172,74 +177,92 @@ export default function LandingPage() {
             </div>
 
             {/* Comparison Section (New) */}
-            <div className="bg-white py-24 border-b border-gray-100">
+            <div className="bg-slate-900 py-24 border-b border-slate-800">
                 <div className="max-w-5xl mx-auto px-6">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Físico vs Digital</h2>
-                        <p className="text-gray-500 text-lg">La diferencia en tu bolsillo es abismal.</p>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">💸 Vender desde un local ya no es rentable</h2>
+                        <p className="text-gray-300 text-lg max-w-3xl mx-auto leading-relaxed">
+                            Alquileres de más de <span className="text-red-400 font-bold">$1.000.000 por mes</span>, llaves de fondo de comercio de <span className="text-red-400 font-bold">miles de dólares</span>, empleados, impuestos y horarios limitados.
+                        </p>
+                        <p className="text-xl text-indigo-300 font-semibold mt-4">
+                            📌 Todo eso para vender solo cuando el local está abierto.
+                        </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
                         {/* Old Way */}
-                        <div className="p-8 rounded-3xl bg-gray-50 border border-gray-200 opacity-80 hover:opacity-100 transition">
-                            <h3 className="text-xl font-bold text-gray-700 mb-6 flex items-center gap-2">
-                                <Store size={20} /> Local Físico Tradicional
+                        <div className="p-8 rounded-3xl bg-slate-800/50 border border-red-500/20 opacity-80 hover:opacity-100 transition">
+                            <h3 className="text-xl font-bold text-red-400 mb-6 flex items-center gap-2">
+                                <Store size={20} /> ❌ Local Físico Tradicional
                             </h3>
-                            <ul className="space-y-4 text-gray-600">
+                            <ul className="space-y-4 text-gray-300">
                                 <li className="flex items-center gap-3">
-                                    <X className="text-red-500 shrink-0" size={18} />
-                                    <span>Alquiler: <strong>$300.000+ / mes</strong></span>
+                                    <X className="text-red-400 shrink-0" size={18} />
+                                    <span>Alquiler mensual de <strong className="text-red-400">$1.000.000+</strong></span>
                                 </li>
                                 <li className="flex items-center gap-3">
-                                    <X className="text-red-500 shrink-0" size={18} />
-                                    <span>Servicios e Impuestos caros</span>
+                                    <X className="text-red-400 shrink-0" size={18} />
+                                    <span>Horarios limitados (8-10 horas/día)</span>
                                 </li>
                                 <li className="flex items-center gap-3">
-                                    <X className="text-red-500 shrink-0" size={18} />
-                                    <span>Horario limitado</span>
+                                    <X className="text-red-400 shrink-0" size={18} />
+                                    <span>Solo vendés en tu zona</span>
                                 </li>
                                 <li className="flex items-center gap-3">
-                                    <X className="text-red-500 shrink-0" size={18} />
-                                    <span>Solo clientes del barrio</span>
+                                    <X className="text-red-400 shrink-0" size={18} />
+                                    <span>Altos costos fijos eternos</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <X className="text-red-400 shrink-0" size={18} />
+                                    <span>Difícil de escalar</span>
                                 </li>
                             </ul>
                         </div>
 
                         {/* New Way */}
-                        <div className="p-8 rounded-3xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 shadow-xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">GANADOR</div>
-                            <h3 className="text-xl font-bold text-indigo-700 mb-6 flex items-center gap-2">
-                                <Laptop size={20} /> Tienda IngeStore
+                        <div className="p-8 rounded-3xl bg-gradient-to-br from-green-900/40 to-emerald-900/40 border-2 border-green-500/50 shadow-xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">✅ GANADOR</div>
+                            <h3 className="text-xl font-bold text-green-400 mb-6 flex items-center gap-2">
+                                <Laptop size={20} /> 🚀 Tu Tienda Online
                             </h3>
-                            <ul className="space-y-4 text-gray-700">
+                            <ul className="space-y-4 text-gray-100">
                                 <li className="flex items-center gap-3">
-                                    <CheckCircle className="text-green-500 shrink-0" size={18} />
-                                    <span>Inversión: <strong>Mínima mensual</strong></span>
+                                    <CheckCircle className="text-green-400 shrink-0" size={18} />
+                                    <span><strong className="text-green-400">Inversión única</strong>, no alquileres eternos</span>
                                 </li>
                                 <li className="flex items-center gap-3">
-                                    <CheckCircle className="text-green-500 shrink-0" size={18} />
-                                    <span>Mantenimiento incluido</span>
+                                    <CheckCircle className="text-green-400 shrink-0" size={18} />
+                                    <span><strong className="text-green-400">Vendes 24/7</strong>, incluso mientras dormís</span>
                                 </li>
                                 <li className="flex items-center gap-3">
-                                    <CheckCircle className="text-green-500 shrink-0" size={18} />
-                                    <span>Abierto <strong>24/7</strong></span>
+                                    <CheckCircle className="text-green-400 shrink-0" size={18} />
+                                    <span><strong className="text-green-400">Llegás a todo el país</strong> y más allá</span>
                                 </li>
                                 <li className="flex items-center gap-3">
-                                    <CheckCircle className="text-green-500 shrink-0" size={18} />
-                                    <span>Ventas a todo el país</span>
+                                    <CheckCircle className="text-green-400 shrink-0" size={18} />
+                                    <span>No dependés de empleados</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <CheckCircle className="text-green-400 shrink-0" size={18} />
+                                    <span><strong className="text-green-400">Escalás sin límites</strong></span>
                                 </li>
                             </ul>
+                            <p className="mt-6 text-center text-green-300 font-semibold text-lg italic">
+                                💤 Mientras dormís, tu tienda sigue vendiendo
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Process Section (New) */}
-            <div id="process" className="py-24 bg-slate-50">
+            <div id="process" className="py-24 bg-slate-950">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Lanza tu web en 3 Pasos</h2>
-                        <p className="text-gray-500">Sin complicaciones técnicas.</p>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">🚀 Tu tienda online trabaja por vos, 24 horas</h2>
+                        <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+                            Una tienda web es un <span className="text-green-400 font-bold">activo digital</span>, no un gasto mensual infinito.
+                        </p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
@@ -248,9 +271,9 @@ export default function LandingPage() {
                             { step: "02", title: "Subís tus Productos", desc: "Carga fotos y precios desde nuestro Panel Admin fácil de usar." },
                             { step: "03", title: "Empezás a Vender", desc: "Compartís tu link y recibís pedidos a tu WhatsApp." }
                         ].map((item, idx) => (
-                            <div key={idx} className="relative group p-8 bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300">
+                            <div key={idx} className="relative group p-8 bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition duration-300 border border-slate-700">
                                 <div className="text-6xl font-black text-gray-100 absolute top-4 right-4 group-hover:text-indigo-50 transition">{item.step}</div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-3 relative z-10">{item.title}</h3>
+                                <h3 className="text-xl font-bold text-white mb-3 relative z-10">{item.title}</h3>
                                 <p className="text-gray-600 relative z-10">{item.desc}</p>
                             </div>
                         ))}
@@ -259,36 +282,44 @@ export default function LandingPage() {
             </div>
 
             {/* Features (Styled) */}
-            <div id="beneficios" className="bg-white py-24">
+            <div id="beneficios" className="bg-slate-900 py-24">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Herramientas Potentes</h2>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">⚡ No es tecnología.<br />Es mentalidad.</h2>
+                        <p className="text-gray-300 text-lg leading-relaxed mt-6">
+                            Los negocios que sobreviven no son los más grandes,<br />
+                            <span className="text-indigo-300 font-semibold">sino los que se adaptan más rápido.</span>
+                        </p>
+                        <p className="text-green-400 font-bold text-xl mt-6">
+                            El cliente cambió. La forma de comprar cambió.<br />
+                            Tu negocio también tiene que cambiar.
+                        </p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-10">
-                        <div className="p-8 rounded-3xl bg-white border border-gray-100 shadow-lg hover:shadow-2xl transition duration-300">
+                        <div className="p-8 rounded-3xl bg-slate-800 border border-slate-700 shadow-lg hover:shadow-2xl transition duration-300">
                             <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 mb-6">
                                 <Store size={28} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Catálogo Interactivo</h3>
+                            <h3 className="text-xl font-bold text-white mb-3">Catálogo Interactivo</h3>
                             <p className="text-gray-600">
                                 Tus clientes amarán navegar tus productos. Fotos HD y carrito de compras rápido.
                             </p>
                         </div>
-                        <div className="p-8 rounded-3xl bg-white border border-gray-100 shadow-lg hover:shadow-2xl transition duration-300">
+                        <div className="p-8 rounded-3xl bg-slate-800 border border-slate-700 shadow-lg hover:shadow-2xl transition duration-300">
                             <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 mb-6">
                                 <Shield size={28} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Autogestión Total</h3>
+                            <h3 className="text-xl font-bold text-white mb-3">Autogestión Total</h3>
                             <p className="text-gray-600">
                                 Cambia precios, pausa productos sin stock y sube novedades en segundos.
                             </p>
                         </div>
-                        <div className="p-8 rounded-3xl bg-white border border-gray-100 shadow-lg hover:shadow-2xl transition duration-300">
+                        <div className="p-8 rounded-3xl bg-slate-800 border border-slate-700 shadow-lg hover:shadow-2xl transition duration-300">
                             <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
                                 <Rocket size={28} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Integración WhatsApp</h3>
+                            <h3 className="text-xl font-bold text-white mb-3">Integración WhatsApp</h3>
                             <p className="text-gray-600">
                                 Los pedidos llegan listos para confirmar. Cierra la venta hablando directamente.
                             </p>
@@ -393,22 +424,26 @@ export default function LandingPage() {
             </div>
 
             {/* CTA Final */}
-            <div className="bg-white py-24 relative overflow-hidden">
+            <div className="bg-slate-950 py-24 relative overflow-hidden">
                 <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-                    <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 tracking-tight">
-                        Tu competencia ya está online. <br /><span className="text-indigo-600">¿Qué estás esperando?</span>
+                    <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-8 tracking-tight leading-tight">
+                        📲 Pasá tu negocio <br />al futuro <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">hoy</span>
                     </h2>
-                    <p className="text-gray-500 text-xl mb-12 max-w-2xl mx-auto">
-                        Prueba gratis por 14 días. Sin tarjeta de crédito.
+                    <p className="text-gray-300 text-xl mb-6 max-w-2xl mx-auto leading-relaxed">
+                        No sigas pagando alquileres eternos.<br />
+                        <span className="text-green-400 font-bold">Convertí tu negocio en una máquina de ventas digital.</span>
+                    </p>
+                    <p className="text-indigo-300 font-semibold text-lg mb-12">
+                        ⚡ Mientras tu competencia sigue atada a un local, vos vendés sin límites.
                     </p>
                     <a
                         href={whatsappUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-green-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-green-700 transition shadow-2xl hover:shadow-green-500/20 transform hover:-translate-y-1"
+                        className="inline-flex items-center gap-3 bg-green-600 text-white px-14 py-6 rounded-full font-bold text-2xl hover:bg-green-700 transition shadow-2xl hover:shadow-green-500/50 transform hover:-translate-y-2 hover:scale-105"
                     >
-                        <MessageCircle size={28} />
-                        Hablar con un Asesor
+                        <MessageCircle size={32} />
+                        👉 Quiero mi tienda web ahora
                     </a>
                 </div>
             </div>
@@ -416,6 +451,6 @@ export default function LandingPage() {
             {/* Footer handled globally in AppContent */}
             {/* Modal de Solicitud */}
             <RequestStoreModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-        </div>
+        </div >
     );
 }

@@ -12,7 +12,6 @@ import DolarQuote from "./components/DolarQuote";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
 import CartPage from "./components/CartPage";
-import ComunidadPage from "./components/ComunidadPage";
 import ImportacionPage from "./components/ImportacionPage";
 import FAQ from "./components/Faq";
 import SEO from "./components/SEO"; // Import SEO component
@@ -99,15 +98,6 @@ const AppContent = ({ cart, addToCart, removeFromCart }) => {
               <>
                 <SEO title="Carrito de Compras" description="Revisa tu pedido de plotters y accesorios." />
                 <CartPage cart={cart} removeFromCart={removeFromCart} />
-              </>
-            }
-          />
-          <Route
-            path="/comunidad"
-            element={
-              <>
-                <SEO title="Comunidad" description="Únete a la comunidad de Ingeniero Emprendedor." />
-                <ComunidadPage />
               </>
             }
           />

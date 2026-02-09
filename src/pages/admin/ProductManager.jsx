@@ -139,11 +139,12 @@ export default function ProductManager() {
     };
 
     const fetchCategorias = async () => {
-        // Asumiendo que categorías también podría ser por tenant, o genéricas
-        // Si añadiste tenant_id a categorias, añade el filtro aquí también.
+        if (!tenant) return;
+
         const { data } = await supabase
             .from('categorias')
             .select('*')
+            .eq('tenant_id', tenant.id)
             .eq('activo', true)
             .order('orden', { ascending: true });
         setCategorias(data || []);
