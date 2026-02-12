@@ -34,6 +34,12 @@ import TenantManager from "./pages/admin/TenantManager";
 import TeamManager from "./pages/admin/TeamManager";
 import { useEffect, useState } from "react";
 
+// Páginas de checkout MercadoPago
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import CheckoutFailure from "./pages/CheckoutFailure";
+import CheckoutPending from "./pages/CheckoutPending";
+import MercadoPagoSettings from "./pages/admin/MercadoPagoSettings";
+
 import LandingPage from "./pages/LandingPage";
 import { useTenant } from "./contexts/TenantContext";
 
@@ -198,6 +204,21 @@ const AppContent = ({ cart, addToCart, removeFromCart }) => {
             element={
               <ProtectedRoute allowedRoles={['owner', 'tenant_owner', 'admin']}>
                 <TeamManager />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Rutas de Checkout MercadoPago */}
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
+          <Route path="/checkout/failure" element={<CheckoutFailure />} />
+          <Route path="/checkout/pending" element={<CheckoutPending />} />
+
+          {/* Configuración MercadoPago */}
+          <Route
+            path="/admin/mercadopago"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'owner', 'tenant_owner']}>
+                <MercadoPagoSettings />
               </ProtectedRoute>
             }
           />

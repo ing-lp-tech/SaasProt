@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 import { Link } from 'react-router-dom';
 import { useTenant } from '../../contexts/TenantContext'; // Importar TenantContext
+import AdminHeader from '../../components/admin/AdminHeader';
 import { Package, Upload, DollarSign, Tag, Image as ImageIcon, Edit, X, Save, Loader, ArrowLeft, ExternalLink } from 'lucide-react';
 import { compressImage } from '../../utils/imageOptimizer';
 import './ProductManager.css';
@@ -381,30 +382,26 @@ export default function ProductManager() {
 
     return (
         <div className="product-manager">
-            <div className="product-header">
-                <div>
-                    <h1>Gestión de Productos</h1>
-                    <p className="text-sm text-gray-500 mb-2">
-                        Administrando tienda: <strong className="text-purple-600">{tenant?.name || 'Cargando...'}</strong>
-                    </p>
-                    <p className="user-indicator">
-                        Logueado como: <strong>{user?.email}</strong>
-                    </p>
+            <AdminHeader
+                title="Gestión de Productos"
+                subtitle="Administra tu catálogo de productos y precios"
+            />
+
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div className="flex items-center gap-4">
                     {dolarOficial && (
-                        <p className="dolar-indicator">
-                            Dólar Oficial: <strong>${dolarOficial}</strong>
-                        </p>
+                        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg font-medium border border-green-200 shadow-sm flex items-center gap-2">
+                            <DollarSign size={18} />
+                            <span>Dólar Oficial: <strong>${dolarOficial}</strong></span>
+                        </div>
                     )}
                 </div>
+
                 {/* Navegación Superior */}
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="flex gap-3">
                     <Link
                         to="/admin/dashboard"
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '5px',
-                            padding: '8px 12px', background: '#f3f4f6', borderRadius: '6px',
-                            textDecoration: 'none', color: '#374151', fontWeight: '500'
-                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition font-medium"
                     >
                         <ArrowLeft size={18} /> Dashboard
                     </Link>
@@ -412,11 +409,7 @@ export default function ProductManager() {
                         href={tenant ? `/?tenant=${tenant.subdomain}` : "/"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '5px',
-                            padding: '8px 12px', background: '#eff6ff', borderRadius: '6px',
-                            textDecoration: 'none', color: '#2563eb', fontWeight: '500', border: '1px solid #bfdbfe'
-                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 rounded-lg transition font-medium"
                     >
                         <ExternalLink size={18} /> Ver Tienda
                     </a>

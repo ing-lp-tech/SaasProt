@@ -1,6 +1,6 @@
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Package, FileText, BarChart3, Folder, Users, Globe } from 'lucide-react';
+import { Package, FileText, BarChart3, Folder, Users, Globe, CreditCard } from 'lucide-react';
 import AdminHeader from '../../components/admin/AdminHeader';
 import './Dashboard.css';
 
@@ -76,6 +76,12 @@ export default function Dashboard() {
                             <Users size={32} />
                             <h2>Gestionar Equipo</h2>
                             <p>Asignar roles y permisos (Vendedores)</p>
+                        </div>
+
+                        <div className="dashboard-card bg-green-50 hover:bg-green-100" onClick={() => navigate('/admin/mercadopago')}>
+                            <CreditCard size={32} className="text-green-600" />
+                            <h2 className="text-green-900">Configuración de Pagos</h2>
+                            <p className="text-green-700">Gestionar MercadoPago, métodos de pago y seña</p>
                         </div>
                     </>
                 )}

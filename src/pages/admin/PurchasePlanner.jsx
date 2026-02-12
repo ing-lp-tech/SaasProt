@@ -8,6 +8,7 @@ import {
     Calendar, Package, DollarSign, Upload, Loader2, ArrowLeft, FileText
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AdminHeader from '../../components/admin/AdminHeader';
 
 const PurchasePlanner = () => {
     const { tenant } = useTenant();
@@ -347,18 +348,31 @@ const PurchasePlanner = () => {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="w-full mx-auto">
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                        <Link to="/admin/dashboard" className="p-2 bg-white rounded-full shadow hover:bg-gray-100">
-                            <ArrowLeft size={20} className="text-gray-600" />
+                <AdminHeader
+                    title="Planificador de Compras"
+                    subtitle="Calcula costos, compara y guarda tus posibles compras"
+                />
+
+                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <div className="flex gap-3">
+                        <Link
+                            to="/admin/dashboard"
+                            className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 text-gray-700 transition"
+                        >
+                            <ArrowLeft size={20} /> Dashboard
                         </Link>
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-                                <Calculator className="text-blue-600" /> Planificador de Compras
-                            </h1>
-                            <p className="text-gray-500 hidden md:block">Calcula costos, compara y guarda tus posibles compras</p>
-                        </div>
+                        {tenant && (
+                            <a
+                                href={`/?tenant=${tenant.subdomain}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 rounded-lg transition font-medium"
+                            >
+                                <ExternalLink size={18} /> Ver Tienda
+                            </a>
+                        )}
                     </div>
+
                     <button
                         onClick={handleNew}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all flex items-center gap-2 transform active:scale-95"

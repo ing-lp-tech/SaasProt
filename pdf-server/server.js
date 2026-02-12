@@ -61,6 +61,25 @@ const tenantMiddleware = async (req, res, next) => {
 
 app.use(tenantMiddleware);
 
+// Middleware para pasar supabase a las rutas
+app.use((req, res, next) => {
+    req.supabase = supabase;
+    next();
+});
+
+// ============================================
+// RUTAS MODULARES
+// ============================================
+const mercadopagoRoutes = require('./routes/mercadopago');
+const saasRoutes = require('./routes/saas');
+
+app.use('/api/mercadopago', mercadopagoRoutes);
+app.use('/api/saas', saasRoutes);
+
+// ============================================
+// RUTAS EXISTENTES (PDF, CHAT, ETC.)
+// ============================================
+
 // Endpoint para crear usuarios (Tenant Owners) desde Admin
 app.post('/create-tenant-user', async (req, res) => {
     try {
@@ -555,7 +574,11 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`\n✅ PDF Processing Server running on http://localhost:${PORT}`);
-    console.log(`📄 Upload endpoint: POST http://localhost:${PORT}/upload-pdf`);
+    console.log(`\n✅ Backend Server running on http://localhost:${PORT}`);
+    console.log(`📄 Upload PDF: POST http://localhost:${PORT}/upload-pdf`);
+    console.log(`💬 Chat: POST http://localhost:${PORT}/chat`);
+    console.log(`💬 Chat Vendedor: POST http://localhost:${PORT}/chat-vendedor`);
+    console.log(`💳 MercadoPago API: http://localhost:${PORT}/api/mercadopago`);
+    console.log(`🏢 SaaS Admin API: http://localhost:${PORT}/api/saas`);
     console.log(`💚 Health check: GET http://localhost:${PORT}/health\n`);
 });

@@ -14,14 +14,24 @@ const TenantManager = () => {
     const [newName, setNewName] = useState('');
     const [newSubdomain, setNewSubdomain] = useState('');
     const [newOwnerEmail, setNewOwnerEmail] = useState('');
-    const [newPassword, setNewPassword] = useState(''); // Estado para password
+    const [newPassword, setNewPassword] = useState('');
+
+    // Estados financieros para SaaS
+    const [monthlyFee, setMonthlyFee] = useState('');
+    const [paymentStatus, setPaymentStatus] = useState('up_to_date');
+    const [ownerPhone, setOwnerPhone] = useState('');
 
     const [creating, setCreating] = useState(false);
-    const [editingId, setEditingId] = useState(null); // ID if editing
+    const [editingId, setEditingId] = useState(null);
 
     // Details Modal State
     const [selectedTenant, setSelectedTenant] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+    // Modal de edición financiera
+    const [showFinanceModal, setShowFinanceModal] = useState(false);
+    const [editingFinance, setEditingFinance] = useState(null);
+
 
     useEffect(() => {
         // En una implementación real, verificaríamos el rol de super_admin aquí o en el router
@@ -60,6 +70,9 @@ const TenantManager = () => {
         setNewSubdomain('');
         setNewOwnerEmail('');
         setNewPassword('');
+        setMonthlyFee('');
+        setPaymentStatus('up_to_date');
+        setOwnerPhone('');
         setEditingId(null);
     };
 
@@ -436,6 +449,35 @@ const TenantManager = () => {
                                                 )}
                                             </div>
 
+                                            {/* FINANCIAL INFO (SaaS) */}
+                                            {(tenant.monthly_fee || tenant.payment_status || tenant.owner_phone) && (
+                                                <div className="mt-3 space-y-1 border-t border-gray-700 pt-2">
+                                                    <div className="text-xs text-gray-400">
+                                                        <span className="font-semibold text-gray-300">💰 Mensualidad:</span> ${tenant.monthly_fee?.toLocaleString() || '0'}
+                                                    </div>
+                                                    <div className="text-xs text-gray-400">
+                                                        <span className="font-semibold text-gray-300">💳 Estado Pago:</span>{' '}
+                                                        <span className={`px-1 py-0.5 rounded text-xs ${tenant.payment_status === 'up_to_date' ? 'bg-green-900/30 text-green-400' :
+                                                            tenant.payment_status === 'debt' ? 'bg-red-900/30 text-red-400' :
+                                                                'bg-gray-700 text-gray-400'
+                                                            }`}>
+                                                            {tenant.payment_status === 'up_to_date' ? 'Al día' :
+                                                                tenant.payment_status === 'debt' ? 'Con deuda' : 'Cancelado'}
+                                                        </span>
+                                                    </div>
+                                                    {tenant.last_payment_date && (
+                                                        <div className="text-xs text-gray-400">
+                                                            <span className="font-semibold text-gray-300">📅 Último pago:</span> {new Date(tenant.last_payment_date).toLocaleDateString()}
+                                                        </div>
+                                                    )}
+                                                    {tenant.owner_phone && (
+                                                        <div className="text-xs text-gray-400">
+                                                            <span className="font-semibold text-gray-300">📞 Teléfono:</span> {tenant.owner_phone}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
                                             {/* PLAN INFO */}
                                             <div className="mt-3 space-y-1">
                                                 <div className="text-xs text-gray-400">
@@ -506,6 +548,15 @@ const TenantManager = () => {
                                                         <LayoutDashboard size={14} /> Admin
                                                     </a>
                                                 </div>
+
+                                                {/* Botón Editar Finanzas */}
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setEditingFinance(tenant); setShowFinanceModal(true); }}
+                                                    className="px-3 py-1.5 bg-yellow-800 hover:bg-yellow-700 text-white text-xs rounded font-bold shadow-sm"
+                                                    title="Editar Información Financiera"
+                                                >
+                                                    💰 Finanzas
+                                                </button>
 
                                                 {/* Toggle Bot */}
                                                 <button
@@ -645,6 +696,145 @@ const TenantManager = () => {
                             >
                                 Cerrar
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL DE EDICIÓN FINANCIERA */}
+            {showFinanceModal && editingFinance && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setShowFinanceModal(false)}>
+                    <div className="bg-gray-800 rounded-xl shadow-2xl w-full max-w-md border border-gray-700 animate-fade-in" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center p-6 border-b border-gray-700">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                💰 Gestión Financiera
+                            </h3>
+                            <button onClick={() => setShowFinanceModal(false)} className="text-gray-400 hover:text-white transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="bg-gray-900 p-3 rounded border border-gray-700 mb-4">
+                                <p className="text-sm text-gray-400">Cliente</p>
+                                <p className="text-white font-semibold">{editingFinance.name}</p>
+                            </div>
+
+                            {/* Mensualidad */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    Mensualidad (ARS)
+                                </label>
+                                <input
+                                    type="number"
+                                    value={monthlyFee || editingFinance.monthly_fee || ''}
+                                    onChange={(e) => setMonthlyFee(e.target.value)}
+                                    className="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 outline-none"
+                                    placeholder="15000"
+                                />
+                            </div>
+
+                            {/* Estado de Pago */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    Estado de Pago
+                                </label>
+                                <select
+                                    value={paymentStatus || editingFinance.payment_status || 'up_to_date'}
+                                    onChange={(e) => setPaymentStatus(e.target.value)}
+                                    className="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 outline-none"
+                                >
+                                    <option value="up_to_date">✅ Al día</option>
+                                    <option value="debt">⚠️ Con deuda</option>
+                                    <option value="cancelled">❌ Cancelado</option>
+                                </select>
+                            </div>
+
+                            {/* Teléfono del Dueño */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    Teléfono del Dueño
+                                </label>
+                                <input
+                                    type="text"
+                                    value={ownerPhone || editingFinance.owner_phone || ''}
+                                    onChange={(e) => setOwnerPhone(e.target.value)}
+                                    className="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 outline-none"
+                                    placeholder="1162020911"
+                                />
+                            </div>
+
+                            {/* Información adicional */}
+                            {editingFinance.subscription_start_date && (
+                                <div className="bg-gray-900 p-3 rounded border border-gray-700">
+                                    <p className="text-xs text-gray-400">Fecha de Alta</p>
+                                    <p className="text-white text-sm">{new Date(editingFinance.subscription_start_date).toLocaleDateString()}</p>
+                                </div>
+                            )}
+
+                            {editingFinance.last_payment_date && (
+                                <div className="bg-gray-900 p-3 rounded border border-gray-700">
+                                    <p className="text-xs text-gray-400">Último Pago</p>
+                                    <p className="text-white text-sm">{new Date(editingFinance.last_payment_date).toLocaleDateString()}</p>
+                                </div>
+                            )}
+
+                            {/* Botones de acción */}
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const { error } = await supabase
+                                                .from('tenants')
+                                                .update({
+                                                    monthly_fee: monthlyFee || editingFinance.monthly_fee,
+                                                    payment_status: paymentStatus || editingFinance.payment_status,
+                                                    owner_phone: ownerPhone || editingFinance.owner_phone
+                                                })
+                                                .eq('id', editingFinance.id);
+
+                                            if (error) throw error;
+                                            setMessage({ type: 'success', text: 'Información financiera actualizada' });
+                                            setShowFinanceModal(false);
+                                            fetchTenants();
+                                            setMonthlyFee('');
+                                            setPaymentStatus('up_to_date');
+                                            setOwnerPhone('');
+                                        } catch (error) {
+                                            console.error(error);
+                                            setMessage({ type: 'error', text: 'Error al actualizar: ' + error.message });
+                                        }
+                                    }}
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium transition"
+                                >
+                                    💾 Guardar Cambios
+                                </button>
+
+                                <button
+                                    onClick={async () => {
+                                        if (!confirm('¿Registrar pago del mes actual?')) return;
+                                        try {
+                                            const { error } = await supabase
+                                                .from('tenants')
+                                                .update({
+                                                    last_payment_date: new Date().toISOString(),
+                                                    payment_status: 'up_to_date'
+                                                })
+                                                .eq('id', editingFinance.id);
+
+                                            if (error) throw error;
+                                            setMessage({ type: 'success', text: '✅ Pago registrado correctamente' });
+                                            setShowFinanceModal(false);
+                                            fetchTenants();
+                                        } catch (error) {
+                                            console.error(error);
+                                            setMessage({ type: 'error', text: 'Error al registrar pago' });
+                                        }
+                                    }}
+                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium transition"
+                                >
+                                    ✅ Registrar Pago
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

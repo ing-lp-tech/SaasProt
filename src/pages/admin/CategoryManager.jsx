@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import AdminHeader from '../../components/admin/AdminHeader';
 import { supabase } from '../../lib/supabaseClient';
 import { Plus, Edit, Trash2, Save, X, MoveUp, MoveDown, ArrowLeft, ExternalLink } from 'lucide-react';
 import { useTenant } from '../../contexts/TenantContext';
@@ -125,16 +126,17 @@ export default function CategoryManager() {
 
     return (
         <div className="category-manager">
-            {/* Navegación Superior */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', gap: '10px' }}>
+            <AdminHeader
+                title="Gestión de Categorías"
+                subtitle="Organiza tus productos para una mejor experiencia de compra"
+            />
+
+            {/* Barra de Herramientas */}
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <div className="flex gap-3">
                     <Link
                         to="/admin/dashboard"
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '5px',
-                            padding: '8px 12px', background: '#f3f4f6', borderRadius: '6px',
-                            textDecoration: 'none', color: '#374151', fontWeight: '500'
-                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition font-medium"
                     >
                         <ArrowLeft size={18} /> Dashboard
                     </Link>
@@ -142,22 +144,15 @@ export default function CategoryManager() {
                         href={tenant ? `/?tenant=${tenant.subdomain}` : "/"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '5px',
-                            padding: '8px 12px', background: '#eff6ff', borderRadius: '6px',
-                            textDecoration: 'none', color: '#2563eb', fontWeight: '500', border: '1px solid #bfdbfe'
-                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 rounded-lg transition font-medium"
                     >
                         <ExternalLink size={18} /> Ver Tienda
                     </a>
                 </div>
-            </div>
 
-            <div className="category-header">
-                <h2>📁 Gestión de Categorías</h2>
                 <button
                     onClick={() => setShowNewForm(!showNewForm)}
-                    className="btn-new-category"
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-sm transition-colors font-semibold"
                 >
                     <Plus size={18} />
                     Nueva Categoría

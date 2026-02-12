@@ -393,7 +393,7 @@ export default function LandingPage() {
             <DolarQuote />
 
             {/* FAQ Section - Reused */}
-            <div id="faq-section">
+            <div id="faq-section" className="dark">
                 <FAQ items={[
                     {
                         category: "Dudas Comunes",
@@ -451,6 +451,20 @@ export default function LandingPage() {
             {/* Footer handled globally in AppContent */}
             {/* Modal de Solicitud */}
             <RequestStoreModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+            {/* Floating WhatsApp Button for Store Request */}
+            <a
+                href="https://wa.me/5491162020911?text=Quiero%20mi%20pagina%20web%20me%20llamo%20:"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fixed bottom-6 left-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-green-500/50 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+                aria-label="Solicitar Tienda por WhatsApp"
+            >
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-gray-800 text-xs font-bold py-1 px-3 rounded-lg shadow opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+                    ¡Pedí tu tienda!
+                </div>
+                <MessageCircle size={32} fill="white" className="text-white" />
+            </a>
         </div >
     );
 }

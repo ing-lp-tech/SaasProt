@@ -43,6 +43,13 @@ export default function AdminHeader({ title, subtitle }) {
                         <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full uppercase font-bold tracking-wide">
                             {role === 'owner' ? 'SUPER_ADMIN' : (role === 'tenant_owner' ? 'TENANT_OWNER' : role)}
                         </span>
+                        {tenant && (
+                            <span className="text-xs bg-blue-500 text-white px-3 py-1 rounded-full font-semibold shadow-sm flex items-center gap-1">
+                                <Store size={12} />
+                                <span className="uppercase">{tenant.subdomain}</span>
+                                {tenant.name && <span className="text-blue-100">• {tenant.name}</span>}
+                            </span>
+                        )}
                     </div>
                 </div>
                 <button

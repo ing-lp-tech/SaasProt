@@ -28,6 +28,25 @@ export default function RequestStoreModal({ isOpen, onClose }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validations
+        if (formData.nombre.trim().length < 3) {
+            alert('Por favor ingresa un nombre completo válido.');
+            return;
+        }
+
+        if (!formData.email.includes('@') || formData.email.length < 5) {
+            alert('Por favor ingresa un email válido.');
+            return;
+        }
+
+        // Phone validation: allows only numbers, spaces, and optional + at the start
+        const phoneRegex = /^[+]?[0-9\s]+$/;
+        if (!phoneRegex.test(formData.telefono) || formData.telefono.replace(/\D/g, '').length < 6) {
+            alert('El teléfono solo debe contener números y opcionalmente el signo + al principio.');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -46,6 +65,8 @@ export default function RequestStoreModal({ isOpen, onClose }) {
                 ]);
 
             if (error) throw error;
+
+
 
             setSuccess(true);
             setTimeout(() => {
@@ -106,7 +127,7 @@ export default function RequestStoreModal({ isOpen, onClose }) {
                                     type="text"
                                     required
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                                    placeholder="Juan Pérez"
+                                    placeholder=""
                                     value={formData.nombre}
                                     onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                                 />
@@ -118,7 +139,7 @@ export default function RequestStoreModal({ isOpen, onClose }) {
                                     type="email"
                                     required
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                                    placeholder="juan@empresa.com"
+                                    placeholder=""
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
@@ -130,7 +151,7 @@ export default function RequestStoreModal({ isOpen, onClose }) {
                                     type="tel"
                                     required
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                                    placeholder="+54 9 11..."
+                                    placeholder=""
                                     value={formData.telefono}
                                     onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                                 />
@@ -141,7 +162,7 @@ export default function RequestStoreModal({ isOpen, onClose }) {
                                 <input
                                     type="text"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                                    placeholder="TikTok, Instagram o Facebook"
+                                    placeholder=""
                                     value={formData.social_link}
                                     onChange={(e) => setFormData({ ...formData, social_link: e.target.value })}
                                 />
@@ -151,7 +172,7 @@ export default function RequestStoreModal({ isOpen, onClose }) {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Mensaje (Opcional)</label>
                                 <textarea
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                                    placeholder="Me gustaría el plan Profesional..."
+                                    placeholder=""
                                     rows="3"
                                     value={formData.mensaje}
                                     onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
